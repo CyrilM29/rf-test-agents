@@ -1,0 +1,17 @@
+rf-test-agents
+Copyright 2026 Cyril Montiel
+
+Licensed under the Apache License, Version 2.0.
+
+This project generalizes the SAP test agents (sap-planner / sap-generator /
+sap-healer) of the SAPFX project (same author, Apache-2.0) into
+technology-agnostic Robot Framework agents. The plan → generate → heal cycle
+transposes the concept of Playwright Test Agents (Microsoft, Apache-2.0) to
+the Robot Framework ecosystem; no Playwright code is included.
+
+scripts/check_spec_sync.py is adapted from the guard of the same name in the
+SAPFX project (Apache-2.0).
+
+The agents drive applications through the rf-mcp / RobotMCP server
+(https://github.com/manykarim/robotmcp), which is a runtime dependency, not
+vendored code.
