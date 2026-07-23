@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Robot Framework outputs
+results/
+log.html
+report.html
+output.xml
+
+# Local editor state (committed team config would go to .vscode/settings.json explicitly)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+
+# Secrets — never commit credentials
+*.secret
+.env

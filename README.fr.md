@@ -1,0 +1,81 @@
+> 🇬🇧 English version: [README.md](README.md)
+
+# rf-test-agents
+
+**Agents de test universels pour Robot Framework — plan → generate → heal —
+pilotés sur l'application vivante via le serveur
+[rf-mcp](https://github.com/manykarim/robotmcp) (RobotMCP).**
+
+Indépendants de la technologie : les agents fonctionnent avec toute
+bibliothèque Robot Framework que rf-mcp peut charger — web (Browser/Playwright,
+SeleniumLibrary), APIs HTTP (RequestsLibrary), mobile (AppiumLibrary), bases de
+données… Ils transposent l'idée des Playwright Test Agents
+(planner / generator / healer) à l'écosystème Robot Framework, généralisés
+depuis les agents SAP du projet SAPFX (même auteur). Licence : Apache-2.0.
+
+## Les trois agents
+
+| Agent | Commande | Ce qu'il fait |
+|-------|----------|---------------|
+| **rf-planner** | `/rf-plan` | Explore l'application vivante via rf-mcp (percevoir → agir → percevoir, snapshots ARIA, vraies réponses API) et écrit un plan de test lisible métier dans `specs/`. Chaque fait du plan a été observé live, jamais supposé. |
+| **rf-generator** | `/rf-generate` | Transforme UN plan `specs/` en suite `.robot` exécutable. Sa discipline fondatrice : **aucune étape n'atterrit dans un fichier avant d'avoir été exécutée live** via rf-mcp. Les keywords métier manquants rejoignent la couche resources (page objects), jamais le corps des tests. |
+| **rf-healer** | `/rf-heal` | Répare une suite en échec en corrigeant la **couche d'automatisation** (`resources/`), jamais en affaiblissant ce que le test prouve. Dérive de localisateur, timing, dérive de données et vrai changement fonctionnel ont chacun leur traitement ; un vrai changement de flux repart chez le planner. |
+
+Le cycle est fermé par un garde de provenance : chaque suite générée embarque
+le hash du plan source, et `python scripts/check_spec_sync.py` échoue dès
+qu'un plan change sans régénération — **le plan est la source de vérité**.
+
+## Conventions non négociables (ce que les agents font respecter)
+
+1. **Les tests ne contiennent aucun localisateur brut.** CSS/XPath/ids vivent
+   dans `resources/page_objects/*.resource` (un page object par page/écran/
+   domaine API) ou `variables/locators.py` ; les tests parlent métier.
+2. **Jamais de `Sleep` pour attendre.** Synchronisation réelle uniquement
+   (`Wait For Elements State`, `Wait Until Element Is Visible`,
+   `Wait Until Keyword Succeeds`).
+3. **Assertions robustes.** Ids stables, rôle ARIA + nom accessible,
+   `data-testid`, codes HTTP, champs JSON, comptes — jamais un libellé localisé
+   quand une ancre stable existe.
+4. **Jamais de localisateur inventé.** Chaque localisateur a été observé/sondé
+   live avant d'être committé.
+5. **Aucun credential dans un fichier.** Variables typées `Secret:` en ligne
+   de commande (RF 7.4+), masquées même au niveau TRACE.
+
+## Arborescence
+
+```text
+.claude/agents/        rf-planner / rf-generator / rf-healer (définitions canoniques)
+.claude/commands/      /rf-plan  /rf-generate  /rf-heal
+.mcp.json              déclaration du serveur rf-mcp (portée projet)
+specs/                 plans de test métier (source de vérité)
+resources/             common.resource + page_objects/ — la couche que les agents écrivent et réparent
+variables/             env_<env>.yaml, locators.py partagé (jamais de credentials)
+tests/robot/           suites générées — api/ · ui/web/ · ui/mobile/ · cross/
+scripts/               check_spec_sync.py (garde de provenance spec ↔ suite)
+results/               sorties robot (gitignoré)
+```
+
+## Démarrage rapide
+
+```bash
+python -m venv .venv && .venv\Scripts\activate     # Windows
+pip install -r requirements.txt                     # décommenter d'abord la bibliothèque de votre canal
+rfbrowser init                                      # seulement si robotframework-browser est activé
+```
+
+Ouvrir le dossier dans Claude Code (ou tout hôte d'agents compatible MCP) :
+`.mcp.json` déclare le serveur rf-mcp. Puis :
+
+```
+/rf-plan     le parcours de connexion de https://monapp.example.com
+/rf-generate specs/parcours-connexion.md
+/rf-heal     tests/robot/ui/web/parcours_connexion.robot
+```
+
+## Lien avec SAPFX
+
+L'incarnation SAP de ces agents (keywords de perception SAP GUI, moteurs de
+localisation UI5, télémétrie de healing) vit dans le projet SAPFX et y reste.
+Ce projet est le **cœur universel** : uniquement les contrats génériques de
+rf-mcp (`manage_session`, `execute_step`, `get_session_state`,
+`get_locator_guidance`, `run_test_suite`…), sans plugin applicatif requis.
