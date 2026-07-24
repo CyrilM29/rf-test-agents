@@ -13,5 +13,5 @@ scripts/check_spec_sync.py is adapted from the guard of the same name in the
 SAPFX project (Apache-2.0).
 
 The agents drive applications through the rf-mcp / RobotMCP server
-(https://github.com/manykarim/robotmcp), which is a runtime dependency, not
+(https://github.com/manykarim/rf-mcp), which is a runtime dependency, not
 vendored code.
