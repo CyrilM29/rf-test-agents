@@ -77,7 +77,11 @@ Rules that make the ventilation work:
    `recommend_libraries` + `check_library_availability`, then `manage_session`
    init with the channel's libraries (web: `["Browser", "BuiltIn"]`; API:
    `["RequestsLibrary", "BuiltIn"]`; …), `Import Resource` the workspace's
-   resources, open the target (business keyword first). Credentials come from
+   resources, open the target (business keyword first). Keep native-desktop
+   tokens ("desktop", "win32", an `.exe` name…) out of the `scenario` text
+   unless the target really is a native desktop app — since rf-mcp 0.34 they
+   classify the session as desktop (PlatynUI) and `get_session_state` then
+   serves a desktop stub instead of the DOM/ARIA snapshot. Credentials come from
    the user — never hardcode them. ALWAYS close what you opened — even when a
    step fails or the generation is aborted — before any suite re-run (the
    suite opens its own session in Suite Setup).

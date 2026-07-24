@@ -53,8 +53,12 @@ finding: move it into the right page object as part of the fix, and say so.
    value stays the literal string `Secret:<value>` and `Fill Secret` rejects
    it (learned live 2026-07-24).
 2. **Classify the failure** — each class has its own repair:
-   - **Locator drift** (element not found). Open an rf-mcp session, navigate to
-     the failing page, perceive it
+   - **Locator drift** (element not found). Open an rf-mcp session (keep
+     native-desktop tokens — "desktop", "win32", an `.exe` name… — out of the
+     `scenario` text unless the target really is a native desktop app: since
+     rf-mcp 0.34 they classify the session as desktop/PlatynUI and
+     `get_session_state` serves a desktop stub instead of the DOM/ARIA
+     snapshot), navigate to the failing page, perceive it
      (`get_session_state(sections=["page_source"], include_reduced_dom=True)` —
      the ARIA snapshot exposes the current roles, accessible names and ids),
      and find where the target actually moved. Prefer a MORE stable anchor

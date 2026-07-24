@@ -44,7 +44,11 @@ The rf-mcp server runs at the workspace root, so `resources/` paths are relative
    installed.
 2. `manage_session` → `action="init"`, `libraries=[...]` (e.g.
    `["Browser", "BuiltIn"]` for web, `["RequestsLibrary", "BuiltIn"]` for API),
-   `scenario=<business goal>`.
+   `scenario=<business goal>`. Keep native-desktop tokens ("desktop",
+   "win32", an `.exe` name…) OUT of the scenario text unless the target
+   really is a native desktop app: since rf-mcp 0.34 they classify the
+   session as desktop (PlatynUI) and `get_session_state` then serves a
+   desktop stub instead of the DOM/ARIA snapshot — your perception channel.
 3. If the workspace has business resources, import them first:
    `execute_step` → `Import Resource    resources/common.resource` (and any
    relevant page object).
