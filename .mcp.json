@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "rf-mcp": {
-      "command": "python",
-      "args": ["-m", "robotmcp", "--transport", "stdio", "--without-frontend"]
+      "command": "robotmcp",
+      "args": ["--transport", "stdio", "--without-frontend"]
     }
   }
 }
