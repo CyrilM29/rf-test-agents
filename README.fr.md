@@ -4,7 +4,7 @@
 
 **Agents de test universels pour Robot Framework — plan → generate → heal —
 pilotés sur l'application vivante via le serveur
-[rf-mcp](https://github.com/manykarim/robotmcp) (RobotMCP).**
+[rf-mcp](https://github.com/manykarim/rf-mcp) (RobotMCP).**
 
 Indépendants de la technologie : les agents fonctionnent avec toute
 bibliothèque Robot Framework que rf-mcp peut charger — web (Browser/Playwright,

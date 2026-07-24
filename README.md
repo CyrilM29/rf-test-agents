@@ -3,7 +3,7 @@
 # rf-test-agents
 
 **Universal test agents for Robot Framework — plan → generate → heal — driven
-by a live application through the [rf-mcp](https://github.com/manykarim/robotmcp)
+by a live application through the [rf-mcp](https://github.com/manykarim/rf-mcp)
 (RobotMCP) server.**
 
 Technology-agnostic: the agents work with whatever Robot Framework library
