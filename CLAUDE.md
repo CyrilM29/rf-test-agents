@@ -31,7 +31,7 @@ Channels: web (Browser/Playwright or SeleniumLibrary), HTTP APIs
 | `.claude/agents/` | **Canonical agent definitions**: `rf-planner.md` (live exploration → spec), `rf-generator.md` (spec → suite, every step executed live before writing), `rf-healer.md` (repairs `resources/`, never tests). |
 | `.claude/commands/` | Slash commands `/rf-plan`, `/rf-generate`, `/rf-generate-all` (batch, sequential), `/rf-heal`. |
 | `.claude/settings.json` | Project hooks: after every Write/Edit of specs/tests/resources/variables, `scripts/hook_guards.py` runs both guards (conventions violations block; spec-sync drift is reported non-blocking). |
-| `.mcp.json` | rf-mcp server declaration (`robotmcp --transport stdio --without-frontend` — the installed fork has no `python -m robotmcp`). |
+| `.mcp.json` | rf-mcp server declaration (`robotmcp --transport stdio --without-frontend`); the console script survives rf-mcp 0.35 unchanged — see « rf-mcp compatibility notes ». |
 | `specs/` | Business test plans (Markdown, French) — **the source of truth**. See its README for the contract. |
 | `resources/common.resource` | Cross-page business keywords + global Setup/Teardown wrappers. |
 | `resources/page_objects/` | ONE `.resource` per page/screen/API domain: locator variables on top, business keywords below. The layer the generator writes and the healer patches. |
@@ -63,6 +63,25 @@ python scripts/check_guidance_sync.py           # conventions still carried by t
 python scripts/regen_agent_definitions.py       # (re)write the VS Code chat modes; --check in CI
 python -m pytest tests/unit -q                  # unit tests of the guard scripts
 ```
+
+## rf-mcp compatibility notes
+
+- Validated against the **0.31.x** contract and re-validated on **0.35.0**
+  (2026-07-24): the generic tool contracts the agents rely on
+  (`manage_session`, `execute_step`, `get_session_state`, `build_test_suite`…)
+  are unchanged; the 0.32/0.33 series were never published.
+- The PyPI distribution is **`rf-mcp`** (importable package `robotmcp`; there
+  is no `robotmcp` distribution on PyPI). The `robotmcp` console script that
+  `.mcp.json` launches still exists in 0.35 (now alongside an `rf-mcp` alias,
+  plus onboarding subcommands `init`/`doctor`/… handled before the server).
+- **Desktop classification trap (rf-mcp ≥ 0.34)**: a `manage_session init`
+  whose `scenario` text contains native-desktop tokens ("desktop", "win32",
+  an `.exe` name…) classifies the session as desktop (PlatynUI) and
+  `get_session_state` then serves a desktop stub instead of the DOM/ARIA
+  snapshot — the agents' perception channel. The three agent definitions
+  carry the warning in their session ritual (convention #8).
+- Since 0.34 the server's agent-instructions template defaults to `lean`
+  (`ROBOTMCP_INSTRUCTIONS_TEMPLATE=standard` restores the verbose one).
 
 ## Conventions (do not break)
 

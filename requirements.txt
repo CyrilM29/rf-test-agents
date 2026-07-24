@@ -1,9 +1,13 @@
 # Core
 robotframework>=7.0
 
-# rf-mcp (RobotMCP) — the MCP server the agents drive; provides `python -m robotmcp`.
-# Pin the version your team validated (the agents were designed against the 0.31.x contract).
-robotmcp
+# rf-mcp (RobotMCP) — the MCP server the agents drive. The PyPI distribution is
+# named `rf-mcp` (the importable package is `robotmcp`; there is NO `robotmcp`
+# distribution on PyPI — the previous line here was uninstallable). Pin the
+# version your team validated: the agents were designed against the 0.31.x
+# contract and re-validated on 0.35.0 (2026-07-24 — the generic tool contracts
+# are unchanged; the 0.32/0.33 series were never published).
+rf-mcp
 
 # Per-channel libraries — uncomment what your applications need.
 # robotframework-browser        # web (Playwright) — then run: rfbrowser init
