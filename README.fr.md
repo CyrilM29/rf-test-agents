@@ -21,9 +21,26 @@ depuis les agents SAP du projet SAPFX (même auteur). Licence : Apache-2.0.
 | **rf-generator** | `/rf-generate` | Transforme UN plan `specs/` en suite `.robot` exécutable. Sa discipline fondatrice : **aucune étape n'atterrit dans un fichier avant d'avoir été exécutée live** via rf-mcp. Les keywords métier manquants rejoignent la couche resources (page objects), jamais le corps des tests. |
 | **rf-healer** | `/rf-heal` | Répare une suite en échec en corrigeant la **couche d'automatisation** (`resources/`), jamais en affaiblissant ce que le test prouve. Dérive de localisateur, timing, dérive de données et vrai changement fonctionnel ont chacun leur traitement ; un vrai changement de flux repart chez le planner. |
 
-Le cycle est fermé par un garde de provenance : chaque suite générée embarque
-le hash du plan source, et `python scripts/check_spec_sync.py` échoue dès
-qu'un plan change sans régénération — **le plan est la source de vérité**.
+`/rf-generate-all` enchaîne le generator sur tous les plans éligibles
+(séquentiellement — page objects partagés et session live unique ne se
+parallélisent pas).
+
+Le cycle est fermé par des gardes mécaniques et des boucles de rétroaction
+explicites :
+
+- **Provenance** — chaque suite générée embarque le hash (+ date) de son plan
+  source ; `python scripts/check_spec_sync.py` échoue dès qu'un plan change
+  sans régénération — **le plan est la source de vérité**.
+- **Conventions** — `python scripts/check_conventions.py` rejette
+  mécaniquement les localisateurs bruts dans les corps de test et tout `Sleep`
+  (gate du generator, hook post-édition dans `.claude/settings.json`, CI).
+- **Boucles de rétroaction** — le healer marque un plan fonctionnellement
+  changé `> **Statut : PÉRIMÉE (date)**` (le garde bloque jusqu'à la
+  ré-exploration par le planner) ; le generator consigne les écarts
+  réalité/plan dans le plan lui-même (« Écarts constatés à la génération »)
+  avant re-stamp ; chaque réparation est journalisée dans
+  `docs/heal-journal.md`, la mémoire des dérives que le planner lit avant
+  d'écrire ses notes de localisation.
 
 ## Conventions non négociables (ce que les agents font respecter)
 
@@ -45,13 +62,17 @@ qu'un plan change sans régénération — **le plan est la source de vérité**
 
 ```text
 .claude/agents/        rf-planner / rf-generator / rf-healer (définitions canoniques)
-.claude/commands/      /rf-plan  /rf-generate  /rf-heal
+.claude/commands/      /rf-plan  /rf-generate  /rf-generate-all  /rf-heal
+.claude/settings.json  hook post-édition lançant les deux gardes
 .mcp.json              déclaration du serveur rf-mcp (portée projet)
 specs/                 plans de test métier (source de vérité)
 resources/             common.resource + page_objects/ — la couche que les agents écrivent et réparent
 variables/             env_<env>.yaml, locators.py partagé (jamais de credentials)
 tests/robot/           suites générées — api/ · ui/web/ · ui/mobile/ · cross/
-scripts/               check_spec_sync.py (garde de provenance spec ↔ suite)
+tests/unit/            tests pytest des scripts de garde
+scripts/               check_spec_sync.py · check_conventions.py · hook_guards.py
+docs/                  heal-journal.md (mémoire des dérives) · validation-live.md (runbook)
+.github/workflows/     CI : tests unitaires + les deux gardes
 results/               sorties robot (gitignoré)
 ```
 

@@ -14,6 +14,12 @@ workspace's convention #1 (locators live in `resources/`, tests speak business
 language), a locator repair is almost always a one-line change in a resource
 file that fixes every suite at once — you should almost never edit a test body.
 
+> **Sync note** — the numbered conventions and the rf-mcp session ritual
+> (perceive → act, session hygiene, anchor ladder id → `data-testid` → ARIA
+> role + accessible name) are shared with `rf-planner.md`, `rf-generator.md`
+> and CLAUDE.md § Conventions. Any change to them must be mirrored in all four
+> files in the same commit.
+
 ## Where things live (your repair surface)
 
 Suites are ventilated under `tests/robot/` (`api/`, `ui/web/`, `ui/mobile/`,
@@ -56,8 +62,13 @@ finding: move it into the right page object as part of the fix, and say so.
      flagging it to the user.
    - **Genuine functional change** (the business flow itself changed). Do NOT
      force the test green: tag it `robot:skip` with a comment naming what
-     changed, flag the source spec in `specs/` as stale, and tell the user the
-     rf-planner should re-explore this flow.
+     changed, mark the source spec stale with the **normalized marker** — a
+     blockquote inserted right under the spec's H1 title:
+     `> **Statut : PÉRIMÉE (<AAAA-MM-JJ>)** — <what changed, one line> ;
+     re-explorer via /rf-plan.`
+     `check_spec_sync.py` fails while this marker is present (the drift stays
+     visible in CI); the rf-planner removes it when it re-explores the flow.
+     Tell the user the planner round is needed.
 3. **Verify the candidate fix live** before touching any file: probe the
    repaired locator with `execute_step` (`Wait For Elements State` /
    `Element Should Be Visible` / a real request). Also check for interfering
@@ -78,6 +89,22 @@ Your final report lists every change as `before → after`, with the live
 evidence (perception excerpt or probe result) that justified it. If you could
 not fix something, say so plainly.
 
+**Healing journal** — after every heal session that changed at least one file,
+append an entry to `docs/heal-journal.md` (create it from its header if
+missing):
+
+```markdown
+## <AAAA-MM-JJ> — <suite>.robot
+- **Classe** : locator drift | timing | data drift | changement fonctionnel
+- **Réparation** : `<fichier>` : `avant` → `après` (one line per change)
+- **Preuve** : <one-line live evidence that justified the fix>
+```
+
+The journal is the workspace's drift memory: recurring entries on the same
+page object or the same anchor family (e.g. generated ids that keep dying)
+are a signal the generator should pick more stable anchors there — the
+rf-planner reads this journal before writing locator notes.
+
 ## Ground rules (never break)
 
 1. Locators live in the `resources/` layer; tests keep speaking business
@@ -96,4 +123,5 @@ not fix something, say so plainly.
 
 Reply with: root cause per failure (one line), each repair as
 `before → after` + the file touched + the live evidence, the final `robot` run
-status (real numbers), and any test you had to `robot:skip` with the reason.
+status (real numbers), the `docs/heal-journal.md` entry you appended, and any
+test you had to `robot:skip` with the reason (plus the spec marked PÉRIMÉE).

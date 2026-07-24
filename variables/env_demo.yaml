@@ -1,0 +1,24 @@
+# Données d'environnement — boutique de démonstration Sauce Labs (canal web).
+# Aucun credential ici (convention #6) : ${SAUCE_USER} / ${SAUCE_PASSWORD}
+# arrivent en variables de ligne de commande typées `Secret:`.
+#
+#   robot --outputdir results \
+#     -v "SAUCE_USER:standard_user" \
+#     -v "SAUCE_PASSWORD: secret:<mot-de-passe>" \
+# (l'espace après « SAUCE_PASSWORD: » est exigé par la syntaxe de typage des
+#  variables -v de Robot Framework 7.4)
+#     tests/robot/ui/web/saucedemo_connexion_panier.robot
+
+# URLs observées live le 2026-07-24 (rf-mcp, Browser chromium headless).
+BASE_URL: https://www.saucedemo.com/
+INVENTORY_URL: https://www.saucedemo.com/inventory.html
+CART_URL: https://www.saucedemo.com/cart.html
+
+# Navigateur : chromium headless par défaut ; surchargeable en -v.
+BROWSER: chromium
+HEADLESS: true
+
+# Données du catalogue de démonstration (6 articles, prix affichés en $).
+NOMBRE_PRODUITS_ATTENDU: 6
+ARTICLE_TESTE: Sauce Labs Backpack
+PRIX_ARTICLE_TESTE: "$29.99"

@@ -5,6 +5,8 @@ venv/
 
 # Robot Framework outputs
 results/
+# rf-mcp session artifacts (created at the workspace root by the MCP server)
+.robotmcp_artifacts/
 log.html
 report.html
 output.xml

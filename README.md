@@ -21,10 +21,23 @@ project (same author). License: Apache-2.0.
 | **rf-generator** | `/rf-generate` | Turns one `specs/` plan into a runnable `.robot` suite. Its defining discipline: **no step lands in a file before it was executed live** through rf-mcp. Missing business keywords are added to the resource layer (page objects), never inlined in tests. |
 | **rf-healer** | `/rf-heal` | Repairs a failing suite by fixing the **automation layer** (`resources/`), never by weakening what the test proves. Locator drift, timing, data drift and genuine functional changes each get their own treatment; genuine flow changes go back to the planner. |
 
-The cycle is closed by a provenance guard: each generated suite embeds the
-content hash of its source spec, and `python scripts/check_spec_sync.py` fails
-whenever a spec changed without regeneration — **the plan is the source of
-truth**.
+`/rf-generate-all` chains the generator over every eligible spec (sequentially
+— shared page objects and one live session don't parallelize).
+
+The cycle is closed by mechanical guards and explicit feedback loops:
+
+- **Provenance** — each generated suite embeds the content hash (+ date) of
+  its source spec; `python scripts/check_spec_sync.py` fails whenever a spec
+  changed without regeneration — **the plan is the source of truth**.
+- **Conventions** — `python scripts/check_conventions.py` mechanically rejects
+  raw locators in test bodies and any `Sleep` (generator gate, post-edit hook
+  in `.claude/settings.json`, CI).
+- **Feedback loops** — the healer marks a functionally-changed spec
+  `> **Statut : PÉRIMÉE (date)**` (blocks the guard until the planner
+  re-explores); the generator records reality/spec divergences in the spec
+  (« Écarts constatés à la génération ») before re-stamping; every repair is
+  logged in `docs/heal-journal.md`, the drift memory the planner reads before
+  writing locator notes.
 
 ## Non-negotiable conventions (what the agents enforce)
 
@@ -45,13 +58,17 @@ truth**.
 
 ```text
 .claude/agents/        rf-planner / rf-generator / rf-healer (canonical definitions)
-.claude/commands/      /rf-plan  /rf-generate  /rf-heal
+.claude/commands/      /rf-plan  /rf-generate  /rf-generate-all  /rf-heal
+.claude/settings.json  post-edit hook running both guards
 .mcp.json              rf-mcp server declaration (project scope)
 specs/                 business test plans (source of truth)
 resources/             common.resource + page_objects/ — the layer agents write & heal
 variables/             env_<env>.yaml, shared locators.py (never credentials)
 tests/robot/           generated suites — api/ · ui/web/ · ui/mobile/ · cross/
-scripts/               check_spec_sync.py (spec ↔ suite provenance guard)
+tests/unit/            pytest tests of the guard scripts
+scripts/               check_spec_sync.py · check_conventions.py · hook_guards.py
+docs/                  heal-journal.md (drift memory) · validation-live.md (runbook)
+.github/workflows/     CI: unit tests + both guards
 results/               robot outputs (gitignored)
 ```
 

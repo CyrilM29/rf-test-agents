@@ -1,0 +1,28 @@
+# CI du cycle plan -> generate -> heal : les gardes qui ne demandent pas de
+# système cible. Le dry run robot n'est volontairement PAS ici : il exige les
+# bibliothèques de canal (Browser/Selenium/...) déclarées par les suites — il
+# reste un gate local du rf-generator. Les gardes ci-dessous suffisent à
+# bloquer une dérive spec <-> suite ou une violation de convention commitée.
+name: guards
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: pip install pytest robotframework
+      - name: Unit tests (guard scripts)
+        run: python -m pytest tests/unit -q
+      - name: Spec <-> suite provenance guard
+        run: python scripts/check_spec_sync.py
+      - name: Conventions guard (no raw locators in tests, no Sleep)
+        run: python scripts/check_conventions.py

@@ -6,11 +6,15 @@ rf-generator. Pour que cette promesse tienne, il faut détecter la dérive dans
 les deux sens :
 
 * une suite générée porte un **marqueur de provenance** dans sa
-  ``Documentation`` : ``Spec: specs/<plan>.md (sha256:<12 hex du contenu>)`` ;
+  ``Documentation`` : ``Spec: specs/<plan>.md (sha256:<12 hex du contenu>,
+  <date de génération>)`` — la date est informative, seul le hash fait foi ;
 * si le plan a changé depuis la génération (hash différent), la suite est
   **périmée** → exit 1 : il faut repasser par ``/rf-generate`` (ou assumer le
   changement en re-stampant), jamais éditer la suite à la main en silence ;
 * un marqueur pointant vers un plan disparu est cassé → exit 1 ;
+* un plan portant le marqueur ``> **Statut : PÉRIMÉE (…)**`` (posé par
+  rf-healer après un vrai changement fonctionnel) → exit 1 tant que
+  rf-planner n'a pas ré-exploré le flux et retiré le marqueur ;
 * les plans sans suite sont listés à titre informatif (le generator n'est
   peut-être pas encore passé) — jamais bloquant.
 
@@ -31,13 +35,21 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import datetime
 import hashlib
 import re
 import sys
 from pathlib import Path
 
+# La date de génération est optionnelle : les suites stampées avant son
+# introduction restent valides.
 MARKER = re.compile(
-    r"Spec:\s*(?P<spec>specs/[^\s]+\.md)\s*\(sha256:(?P<digest>[0-9a-f]{12})\)")
+    r"Spec:\s*(?P<spec>specs/[^\s]+\.md)\s*"
+    r"\(sha256:(?P<digest>[0-9a-f]{12})(?:,\s*(?P<date>\d{4}-\d{2}-\d{2}))?\)")
+
+# Marqueur posé par rf-healer en tête de spec après un vrai changement
+# fonctionnel ; retiré par rf-planner à la ré-exploration.
+STALE = re.compile(r"^>\s*\*\*Statut\s*:\s*PÉRIMÉE", re.MULTILINE)
 
 # Plans sans suite par nature : le contrat du répertoire et les feuilles de
 # route produites par le mode discovery du planner.
@@ -82,6 +94,15 @@ def check(repo_root: Path) -> int:
                 "(sha256 %s ≠ %s) : repasser par /rf-generate, ou re-stamper "
                 "si le changement n'impacte pas la suite"
                 % (suite.name, spec_rel, actual, digest))
+    if specs_dir.exists():
+        for spec_path in sorted(specs_dir.glob("*.md")):
+            if spec_path.name in _UNLINKED_OK:
+                continue
+            if STALE.search(spec_path.read_text(encoding="utf-8")):
+                problems.append(
+                    "specs/%s : marquée PÉRIMÉE par rf-healer (changement "
+                    "fonctionnel) — re-explorer via /rf-plan ; le planner "
+                    "retire le marqueur" % spec_path.name)
     if problems:
         print("[check_spec_sync] ÉCHEC :")
         for problem in problems:
@@ -106,7 +127,8 @@ def stamp(repo_root: Path, suite_rel: str, spec_rel: str) -> int:
         print("[check_spec_sync] introuvable : %s ou %s" % (suite_rel, spec_rel))
         return 1
     digest = spec_digest(spec_path)
-    marker = "Spec: %s (sha256:%s)" % (spec_rel.replace("\\", "/"), digest)
+    marker = "Spec: %s (sha256:%s, %s)" % (
+        spec_rel.replace("\\", "/"), digest, datetime.date.today().isoformat())
     text = suite_path.read_text(encoding="utf-8")
     if MARKER.search(text):
         text = MARKER.sub(marker, text, count=1)

@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python scripts/hook_guards.py",
+            "timeout": 30,
+            "statusMessage": "Gardes spec-sync + conventions…"
+          }
+        ]
+      }
+    ]
+  }
+}

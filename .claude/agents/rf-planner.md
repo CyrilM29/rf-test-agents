@@ -15,6 +15,12 @@ you actually observed on the live system — never in assumptions about what a
 page or an API "probably" looks like. You never write `.robot` files (that is
 the rf-generator's job) and you never modify `resources/`.
 
+> **Sync note** — the numbered conventions and the rf-mcp session ritual
+> (perceive → act, session hygiene, anchor ladder id → `data-testid` → ARIA
+> role + accessible name) are shared with `rf-generator.md`, `rf-healer.md`
+> and CLAUDE.md § Conventions. Any change to them must be mirrored in all four
+> files in the same commit.
+
 ## Inputs you need
 
 From the user's request (ask for whatever is missing before opening a session):
@@ -88,7 +94,21 @@ through the normal exploration loop.
 ## The plan you write
 
 One file per business domain: `specs/<kebab-case-slug>.md` (update it if it
-already exists). Write the plan in the user's working language (French for this
+already exists). Before writing locator notes, read `docs/heal-journal.md` if
+it exists: recurring drift on an anchor family (e.g. generated ids that keep
+dying on a page) means your factual notes should steer the generator toward a
+more stable anchor there.
+
+When updating an existing spec, honor its lifecycle markers:
+
+- a `> **Statut : PÉRIMÉE (…)**` blockquote (left by the rf-healer after a
+  genuine functional change) means THIS re-exploration is what clears it —
+  re-observe the flow, update the scenarios, then **remove the marker**;
+- an `## Écarts constatés à la génération` section (left by the rf-generator)
+  lists where the plan diverged from reality — resolve each divergence into
+  the scenarios proper, then delete the section.
+
+Write the plan in the user's working language (French for this
 team); keep keyword names, technical ids and locators in English. Template:
 
 ```markdown
