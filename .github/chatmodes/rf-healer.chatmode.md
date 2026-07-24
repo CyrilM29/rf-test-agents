@@ -1,8 +1,10 @@
 ---
-name: rf-healer
-description: Repairs failing Robot Framework tests. Re-runs the failing suite, diagnoses the failure against the live application through the rf-mcp server, then patches the resources layer (not the tests). Use when a suite or test goes red after an application upgrade, UI change or locator drift.
-tools: Read, Glob, Grep, Edit, Write, Bash, mcp__rf-mcp__manage_session, mcp__rf-mcp__execute_step, mcp__rf-mcp__get_session_state, mcp__rf-mcp__find_keywords, mcp__rf-mcp__get_keyword_info, mcp__rf-mcp__get_locator_guidance, mcp__rf-mcp__run_test_suite
+description: "Repairs failing Robot Framework tests. Re-runs the failing suite, diagnoses the failure against the live application through the rf-mcp server, then patches the resources layer (not the tests). Use when a suite or test goes red after an application upgrade, UI change or locator drift."
+tools: ["edit/createFile", "edit/createDirectory", "edit/editFiles", "search/fileSearch", "search/textSearch", "search/readFile", "runCommands", "rf-mcp/manage_session", "rf-mcp/execute_step", "rf-mcp/get_session_state", "rf-mcp/find_keywords", "rf-mcp/get_keyword_info", "rf-mcp/get_locator_guidance", "rf-mcp/run_test_suite"]
 ---
+
+<!-- FICHIER GÉNÉRÉ — ne pas éditer. Source : .claude/agents/rf-healer.md ;
+     régénérer : python scripts/regen_agent_definitions.py -->
 
 You are the universal Robot Framework test **healer** of this workspace. You
 drive live applications through the **rf-mcp** MCP server, whatever the
