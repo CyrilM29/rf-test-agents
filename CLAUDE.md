@@ -39,6 +39,8 @@ Channels: web (Browser/Playwright or SeleniumLibrary), HTTP APIs
 | `tests/robot/` | Generated suites, ventilated: `api/`, `ui/web/`, `ui/mobile/`, `cross/`. |
 | `scripts/check_spec_sync.py` | Provenance guard: each generated suite embeds its spec's sha256 (+ generation date); a spec changed without regeneration fails the guard, as does a spec carrying the healer's `> **Statut : PÉRIMÉE (…)**` marker. `--stamp` after each (re)generation. |
 | `scripts/check_conventions.py` | Mechanical guard for conventions #1/#2: raw locators in test bodies, `Sleep` anywhere. Generator gate, hook, and CI. |
+| `scripts/check_guidance_sync.py` | Consistency guard for convention #8: the numbered conventions must stay carried by the three agent definitions (they exist in four copies by design). Ported from SAPFX. |
+| `scripts/regen_agent_definitions.py` | Generates `.github/chatmodes/*.chatmode.md` (VS Code / Copilot dialect) from `.claude/agents/rf-*.md`; `--check` guards drift in CI. Ported from SAPFX. |
 | `docs/heal-journal.md` | Drift memory: one entry per heal session (class, before → after, evidence). The planner reads it before writing locator notes. |
 | `docs/validation-live.md` | Runbook for the first live end-to-end validation of the cycle. |
 | `tests/unit/` | pytest tests of the guard scripts (`python -m pytest tests/unit -q`). |
@@ -57,6 +59,8 @@ robot --outputdir results -v "APP_PASSWORD: Secret:..." tests/robot/ui/web/<suit
 python scripts/check_spec_sync.py               # spec ↔ suite provenance guard (+ stale-spec markers)
 python scripts/check_spec_sync.py --stamp tests/robot/ui/web/<s>.robot specs/<p>.md
 python scripts/check_conventions.py             # conventions #1/#2 guard (raw locators, Sleep)
+python scripts/check_guidance_sync.py           # conventions still carried by the agent definitions (#8)
+python scripts/regen_agent_definitions.py       # (re)write the VS Code chat modes; --check in CI
 python -m pytest tests/unit -q                  # unit tests of the guard scripts
 ```
 
@@ -74,9 +78,11 @@ python -m pytest tests/unit -q                  # unit tests of the guard script
 5. **The spec is the source of truth** — never hand-edit a generated suite to
    catch up with its spec; regenerate (or consciously re-stamp).
 6. **Credentials never in files** — `Secret:` typed command-line variables.
-7. Agent definitions in `.claude/agents/` are the canonical source; if other
-   assistant formats are derived later (VS Code chat modes…), generate them,
-   never fork them.
+7. Agent definitions in `.claude/agents/` are the canonical source; other
+   assistant formats are **generated**, never forked —
+   `python scripts/regen_agent_definitions.py` writes
+   `.github/chatmodes/*.chatmode.md`, and `--check` fails CI when a chat mode
+   drifts from its source (edit the agent, then regenerate in the same commit).
 8. **Ground rules are quadruplicated by design** — conventions and the rf-mcp
    session ritual appear in the three agent files AND here. Any change must be
    mirrored in all four in the same commit (each agent carries a sync note).
@@ -111,4 +117,12 @@ conceptually aligned but have no code dependency.
       `/rf-heal` (diagnosed unaided, one-line resource fix, back to 3/3 PASS,
       first `docs/heal-journal.md` entry). Results and findings in
       `docs/validation-live.md`.
-- [ ] Optional: VS Code chat-mode generation from `.claude/agents/`.
+- [x] **Bidirectional port with SAPFX (2026-07-24)**: pushed the feedback
+      loops and `check_conventions.py` to SAPFX (branch
+      `port-agent-feedback-loops`); pulled back its two better answers —
+      `regen_agent_definitions.py` (VS Code chat modes generated from the
+      canonical agents, closing the item below) and `check_guidance_sync.py`
+      (convention #8 enforced by a guard rather than by a prose note). The
+      guard immediately caught a real gap: only `rf-generator.md` carried
+      convention #6, so the healer had no `Secret:` syntax to reproduce a
+      failure with.
