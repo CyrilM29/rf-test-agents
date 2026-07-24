@@ -13,6 +13,46 @@ données… Ils transposent l'idée des Playwright Test Agents
 (planner / generator / healer) à l'écosystème Robot Framework, généralisés
 depuis les agents SAP du projet SAPFX (même auteur). Licence : Apache-2.0.
 
+```mermaid
+flowchart TB
+    APP(["Application vivante — web · API · mobile"])
+    MCP{{"rf-mcp · percevoir → agir → percevoir"}}
+
+    subgraph CYCLE ["plan → generate → heal"]
+    direction LR
+        PLAN["<b>rf-planner</b><br/>/rf-plan"]
+        SPEC["specs/<br/><b>plan métier</b><br/>source de vérité"]
+        GEN["<b>rf-generator</b><br/>/rf-generate"]
+        CODE["tests/robot/ + resources/<br/>suites · page objects"]
+        HEAL["<b>rf-healer</b><br/>/rf-heal"]
+
+        PLAN ==>|"explore<br/>et observe"| SPEC
+        SPEC ==>|"chaque étape<br/>rejouée live"| GEN
+        GEN ==> CODE
+        CODE ==>|"suite au rouge"| HEAL
+        HEAL ==>|"patch<br/>resources/"| CODE
+        GEN -.->|"écarts constatés"| SPEC
+        HEAL -.->|"spec périmée<br/>heal-journal"| PLAN
+    end
+
+    APP <--> MCP
+    MCP -.-> CYCLE
+
+    classDef agent fill:#4f46e5,stroke:#3730a3,color:#ffffff
+    classDef artefact fill:#e0e7ff,stroke:#6366f1,color:#1e1b4b
+    classDef live fill:#059669,stroke:#047857,color:#ffffff
+    class PLAN,GEN,HEAL agent
+    class SPEC,CODE artefact
+    class APP,MCP live
+    style CYCLE fill:transparent,stroke:#94a3b8,stroke-dasharray:5 5
+```
+
+Les flèches pleines sont le cycle ; les pointillés sont les boucles de
+rétroaction qui gardent le plan honnête — le generator consigne les écarts
+entre le plan et la réalité, le healer marque une spec périmée quand c'est le
+flux métier lui-même qui a changé, et chaque réparation atterrit dans le
+journal de guérison que le planner relit à sa passe suivante.
+
 ## Les trois agents
 
 | Agent | Commande | Ce qu'il fait |

@@ -13,6 +13,45 @@ Playwright Test Agents idea (planner / generator / healer) to the Robot
 Framework ecosystem, generalized from the SAP-specific agents of the SAPFX
 project (same author). License: Apache-2.0.
 
+```mermaid
+flowchart TB
+    APP(["Live application — web · API · mobile"])
+    MCP{{"rf-mcp · perceive → act → perceive"}}
+
+    subgraph CYCLE ["plan → generate → heal"]
+    direction LR
+        PLAN["<b>rf-planner</b><br/>/rf-plan"]
+        SPEC["specs/<br/><b>business plan</b><br/>source of truth"]
+        GEN["<b>rf-generator</b><br/>/rf-generate"]
+        CODE["tests/robot/ + resources/<br/>suites · page objects"]
+        HEAL["<b>rf-healer</b><br/>/rf-heal"]
+
+        PLAN ==>|"explores<br/>and observes"| SPEC
+        SPEC ==>|"every step<br/>replayed live"| GEN
+        GEN ==> CODE
+        CODE ==>|"suite goes red"| HEAL
+        HEAL ==>|"patches<br/>resources/"| CODE
+        GEN -.->|"recorded divergences"| SPEC
+        HEAL -.->|"stale spec<br/>heal journal"| PLAN
+    end
+
+    APP <--> MCP
+    MCP -.-> CYCLE
+
+    classDef agent fill:#4f46e5,stroke:#3730a3,color:#ffffff
+    classDef artefact fill:#e0e7ff,stroke:#6366f1,color:#1e1b4b
+    classDef live fill:#059669,stroke:#047857,color:#ffffff
+    class PLAN,GEN,HEAL agent
+    class SPEC,CODE artefact
+    class APP,MCP live
+    style CYCLE fill:transparent,stroke:#94a3b8,stroke-dasharray:5 5
+```
+
+Solid arrows are the cycle; dotted arrows are the feedback loops that keep the
+plan honest — the generator records where reality diverged from the plan, the
+healer marks a spec stale when the business flow itself changed, and every
+repair lands in the heal journal the planner reads next time.
+
 ## The three agents
 
 | Agent | Command | What it does |
