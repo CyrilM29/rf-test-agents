@@ -113,3 +113,51 @@ bout).
 6. **`.mcp.json` était cassé** (`python -m robotmcp` : le fork installé n'expose
    pas de `__main__`) — corrigé vers le script console `robotmcp`. Sans ce
    correctif, aucun agent n'aurait pu ouvrir de session.
+
+---
+
+## Re-validation du 2026-07-25 (rf-mcp 0.35.0)
+
+Objectif : vérifier **live** que les modifications des trois derniers commits
+(notes de compatibilité 0.35.0, chat modes générés + `check_guidance_sync.py`,
+liens docs) tiennent en conditions réelles — et pas seulement sur le papier.
+
+| Contrôle | Résultat |
+|---|---|
+| Gardes locales | 47 tests unitaires OK ; `check_spec_sync`, `check_conventions`, `check_guidance_sync`, `regen_agent_definitions --check` au vert |
+| Environnement | rf-mcp **0.35.0**, script console `robotmcp` présent, RF 7.4.2, Browser 20.0.0, Playwright 1.60.0 |
+| Rituel de session rf-mcp (web) | session créée, `New Browser` / `New Page`, `get_session_state` → **DOM complet + snapshot ARIA** : le canal de perception des agents est intact sur 0.35 |
+| Suite existante en live | `saucedemo_connexion_panier.robot` → **3 tests, 3 passed** |
+| Dérive simulée | `${SD_LOGIN_ERROR_CLOSE}` : `data-test="error-button"` → `data-test="error-close"` ; suite à **2 passed, 1 failed** |
+| `/rf-heal` (agent rf-healer, 28 appels d'outils) | cause diagnostiquée **sans indice**, correctif d'une ligne dans le page object, **3 tests, 3 passed**, entrée ajoutée au `heal-journal` |
+
+Bonus du healer : il a comparé la variable fautive à `git show HEAD` et
+diagnostiqué que la dérive était **locale et non commitée** (donc un exercice,
+pas un changement de saucedemo.com) — sans que rien dans la consigne ne le
+suggère. Il a aussi refusé de poser un marqueur PÉRIMÉE, la spec ayant raison
+depuis le début.
+
+### Deux corrections sorties de ce live
+
+1. **Le piège de classification desktop visait le mauvais point d'entrée.** La
+   note de compatibilité l'attribuait à `manage_session init` ; mesure faite :
+   `init` **ne classe rien** depuis son texte `scenario` (`session_type` reste
+   `unknown`). C'est **`analyze_scenario`** qui classe — et il classe sur le
+   TEXTE : un scénario purement web contenant le mot « desktop » donne
+   `detected_session_type: desktop_testing` **même avec `context="web"` passé
+   explicitement**, sans charger la moindre librairie web
+   (`libraries_loaded: ["BuiltIn"]`, `PlatynUI.BareMetal` en tête du search
+   order). Pire, la classification est **collante** : importer `Browser`
+   ensuite et ouvrir la bonne URL rétablit `is_browser_session: true` mais
+   **pas** la perception — `get_session_state` continue de servir
+   `page_source: "<!-- Browser Library Page: None -->…"` et
+   `aria_snapshot: null` alors que `current_url` est correcte. Seule sortie :
+   ouvrir une nouvelle session. Enjeu réel : les instructions du serveur rf-mcp
+   poussent activement vers `analyze_scenario` (« NEVER call
+   manage_session(action='init') ») ; le rituel du projet diverge donc
+   **délibérément**, et les quatre copies le disent désormais explicitement.
+2. **`PYTHONIOENCODING=utf-8:surrogateescape`** (valeur de cet environnement)
+   fait crasher le writer console de Robot Framework — `LookupError: unknown
+   encoding: utf-8:surrogateescape` — dès qu'une ligne part sur stderr, sous
+   PowerShell. Le run meurt sur l'affichage, pas sur le test. Contournement :
+   lancer `robot` depuis Bash, ou forcer `PYTHONIOENCODING=utf-8`.
