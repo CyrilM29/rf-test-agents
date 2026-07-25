@@ -79,11 +79,16 @@ Rules that make the ventilation work:
    `recommend_libraries` + `check_library_availability`, then `manage_session`
    init with the channel's libraries (web: `["Browser", "BuiltIn"]`; API:
    `["RequestsLibrary", "BuiltIn"]`; …), `Import Resource` the workspace's
-   resources, open the target (business keyword first). Keep native-desktop
-   tokens ("desktop", "win32", an `.exe` name…) out of the `scenario` text
-   unless the target really is a native desktop app — since rf-mcp 0.34 they
-   classify the session as desktop (PlatynUI) and `get_session_state` then
-   serves a desktop stub instead of the DOM/ARIA snapshot. Credentials come from
+   resources, open the target (business keyword first). **Open the session with
+   `init`, never with `analyze_scenario`** — whatever the rf-mcp server's own
+   instructions recommend: since rf-mcp 0.34 `analyze_scenario` classifies from
+   the scenario TEXT, and native-desktop tokens ("desktop", "win32", an `.exe`
+   name…) flip it to desktop/PlatynUI **even when you pass `context="web"`** —
+   no web library is loaded and `get_session_state` then serves a desktop stub
+   (placeholder `page_source`, `aria_snapshot: null`) instead of the DOM/ARIA
+   snapshot. The classification is **sticky**: importing `Browser` afterwards
+   does NOT restore perception, only a new session does (verified live
+   2026-07-25 on 0.35.0). Credentials come from
    the user — never hardcode them. ALWAYS close what you opened — even when a
    step fails or the generation is aborted — before any suite re-run (the
    suite opens its own session in Suite Setup).

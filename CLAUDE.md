@@ -67,19 +67,32 @@ python -m pytest tests/unit -q                  # unit tests of the guard script
 ## rf-mcp compatibility notes
 
 - Validated against the **0.31.x** contract and re-validated on **0.35.0**
-  (2026-07-24): the generic tool contracts the agents rely on
-  (`manage_session`, `execute_step`, `get_session_state`, `build_test_suite`…)
-  are unchanged; the 0.32/0.33 series were never published.
+  (2026-07-24, then exercised live end-to-end on 2026-07-25): the generic tool
+  contracts the agents rely on (`manage_session`, `execute_step`,
+  `get_session_state`, `build_test_suite`…) are unchanged; the 0.32/0.33 series
+  were never published.
 - The PyPI distribution is **`rf-mcp`** (importable package `robotmcp`; there
   is no `robotmcp` distribution on PyPI). The `robotmcp` console script that
   `.mcp.json` launches still exists in 0.35 (now alongside an `rf-mcp` alias,
   plus onboarding subcommands `init`/`doctor`/… handled before the server).
-- **Desktop classification trap (rf-mcp ≥ 0.34)**: a `manage_session init`
-  whose `scenario` text contains native-desktop tokens ("desktop", "win32",
-  an `.exe` name…) classifies the session as desktop (PlatynUI) and
-  `get_session_state` then serves a desktop stub instead of the DOM/ARIA
-  snapshot — the agents' perception channel. The three agent definitions
-  carry the warning in their session ritual (convention #8).
+- **Desktop classification trap (rf-mcp ≥ 0.34)** — re-measured live on 0.35.0
+  (2026-07-25), and the trap is **`analyze_scenario`, not `manage_session
+  init`**: `analyze_scenario` classifies from the scenario TEXT, so native-
+  desktop tokens ("desktop", "win32", an `.exe` name…) yield
+  `detected_session_type: desktop_testing` **even with `context="web"`
+  explicitly passed** — no web library is loaded (`libraries_loaded:
+  ["BuiltIn"]`, `PlatynUI.BareMetal` first in the search order) and
+  `get_session_state` serves a desktop stub (placeholder `page_source`,
+  `aria_snapshot: null`) instead of the DOM/ARIA snapshot — the agents'
+  perception channel. The classification is **sticky**: importing `Browser`
+  afterwards and opening the right URL restores `is_browser_session: true` but
+  NOT perception; only a new session does. `manage_session init` classified
+  nothing from its `scenario` text (`session_type` stayed `unknown`) — which is
+  why the agents' ritual opens sessions with `init` + explicit `libraries=[...]`
+  and deliberately diverges from the server's own instructions ("call
+  analyze_scenario ONCE to start… NEVER call manage_session(action='init')").
+  The three agent definitions carry the warning in their session ritual
+  (convention #8).
 - Since 0.34 the server's agent-instructions template defaults to `lean`
   (`ROBOTMCP_INSTRUCTIONS_TEMPLATE=standard` restores the verbose one).
 
@@ -145,3 +158,12 @@ conceptually aligned but have no code dependency.
       guard immediately caught a real gap: only `rf-generator.md` carried
       convention #6, so the healer had no `Secret:` syntax to reproduce a
       failure with.
+- [x] **Live re-validation on rf-mcp 0.35.0 (2026-07-25)**: MCP session ritual,
+      ARIA perception, live suite run (`3/3 PASS`) and a full `/rf-heal` cycle
+      on a simulated drift (red `2/3` → diagnosed unaided → `3/3 PASS`, journal
+      entry). Two corrections came out of it: the desktop-classification trap
+      was documented against the wrong entry point (it is `analyze_scenario`,
+      not `manage_session init`, and it is sticky), and this environment's
+      `PYTHONIOENCODING=utf-8:surrogateescape` crashes Robot's console writer
+      under PowerShell — run `robot` from Bash, or set `PYTHONIOENCODING=utf-8`.
+      Details in `docs/validation-live.md`.

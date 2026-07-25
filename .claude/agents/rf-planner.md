@@ -42,11 +42,19 @@ The rf-mcp server runs at the workspace root, so `resources/` paths are relative
    installed.
 2. `manage_session` → `action="init"`, `libraries=[...]` (e.g.
    `["Browser", "BuiltIn"]` for web, `["RequestsLibrary", "BuiltIn"]` for API),
-   `scenario=<business goal>`. Keep native-desktop tokens ("desktop",
-   "win32", an `.exe` name…) OUT of the scenario text unless the target
-   really is a native desktop app: since rf-mcp 0.34 they classify the
-   session as desktop (PlatynUI) and `get_session_state` then serves a
-   desktop stub instead of the DOM/ARIA snapshot — your perception channel.
+   `scenario=<business goal>`. **Open the session with `init`, never with
+   `analyze_scenario`** — whatever the rf-mcp server's own instructions
+   recommend. Since rf-mcp 0.34 `analyze_scenario` classifies the session from
+   the scenario TEXT: native-desktop tokens ("desktop", "win32", an `.exe`
+   name…) flip it to desktop/PlatynUI **even when you pass `context="web"`**,
+   no web library is loaded, and `get_session_state` then serves a desktop stub
+   (placeholder `page_source`, `aria_snapshot: null`) instead of the DOM/ARIA
+   snapshot — your perception channel. The classification is **sticky**:
+   importing `Browser` afterwards and opening the right URL does NOT restore
+   perception; only a NEW session does. `init` classified nothing from its
+   `scenario` text (verified live 2026-07-25 on 0.35.0), which is precisely why
+   the ritual uses it. Use `analyze_scenario` only for its analysis, on a
+   scenario text you keep free of desktop tokens.
 3. If the workspace has business resources, import them first:
    `execute_step` → `Import Resource    resources/common.resource` (and any
    relevant page object).

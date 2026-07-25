@@ -18,6 +18,39 @@ Format d'une entrée (append-only, la plus récente en haut) :
 
 ---
 
+## 2026-07-25 — saucedemo_connexion_panier.robot
+
+- **Classe** : locator drift
+- **Réparation** : `resources/page_objects/saucedemo_login_page.resource` :
+  `${SD_LOGIN_ERROR_CLOSE}` : `css=[data-test="error-close"]` →
+  `css=[data-test="error-button"]`
+- **Preuve** : sonde live rf-mcp (Browser chromium headless, page de connexion
+  après `standard_user` / mot de passe erroné) — le `h3` du bandeau est
+  `<h3 data-test="error"><button class="error-button" data-test="error-button"
+  type="button"></button>Epic sadface: …</h3>` ; `[data-test="error-close"]`
+  → **0 élément**, `[data-test="error-button"]` → visible, puis `Click` →
+  `[data-test="error"]` **detached** et `value` du champ identifiant toujours
+  `standard_user` (la chaîne complète du scénario 2 rejouée live avant
+  écriture). Suite re-jouée : **3 tests, 3 passed, 0 failed**.
+- **Origine** : dérive **locale non commitée** — `git show HEAD` porte déjà
+  `css=[data-test="error-button"]` ; seule la copie du working tree avait été
+  altérée (exercice de dérive simulée, comme le 2026-07-24). Rien n'a changé
+  côté saucedemo.com : la réparation ramène le fichier à son état commité,
+  `git diff` sur ce fichier est donc vide après correction.
+- **Note d'ancrage (pour rf-planner / rf-generator)** : l'ancre altérée
+  contredisait le **commentaire du fichier lui-même** (« seul
+  `data-test=error-button` est exploitable ») et la spec (§ Localisateurs,
+  ligne 27) — la vérité était écrite deux fois à côté de la variable fausse,
+  et la spec a suffi à trancher sans ambiguïté. Ce bouton n'a
+  **aucun nom accessible** (ARIA : `button` nu dans le `heading`), donc
+  l'échelle id → `data-test` → rôle + nom accessible s'arrête ici à
+  `data-test` : pas de repli rôle+nom possible, c'est structurellement la
+  surface la plus fragile de cette page. Deuxième dérive consécutive sur ce
+  site portant sur le **nom** d'une ancre `data-test` (après
+  `inventory-list-container`) : la famille `data-test` reste la bonne, mais
+  toute réparation ici doit vérifier l'ancre contre la spec avant de la
+  réécrire.
+
 ## 2026-07-24 — saucedemo_connexion_panier.robot
 
 - **Classe** : locator drift
