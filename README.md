@@ -2,12 +2,12 @@
 
 # rf-test-agents
 
-**Universal test agents for Robot Framework — plan → generate → heal — driven
+**Universal test agents for Robot Framework (plan → generate → heal) driven
 by a live application through the [rf-mcp](https://github.com/manykarim/rf-mcp)
 (RobotMCP) server.**
 
 Technology-agnostic: the agents work with whatever Robot Framework library
-rf-mcp can load — web (Browser/Playwright, SeleniumLibrary), HTTP APIs
+rf-mcp can load: web (Browser/Playwright, SeleniumLibrary), HTTP APIs
 (RequestsLibrary), mobile (AppiumLibrary), databases… They transpose the
 Playwright Test Agents idea (planner / generator / healer) to the Robot
 Framework ecosystem, generalized from the SAP-specific agents of the SAPFX
@@ -15,7 +15,7 @@ project (same author). License: Apache-2.0.
 
 ```mermaid
 flowchart TB
-    APP(["Live application — web · API · mobile"])
+    APP(["Live application: web · API · mobile"])
     MCP{{"rf-mcp · perceive → act → perceive"}}
 
     subgraph CYCLE ["plan → generate → heal"]
@@ -48,30 +48,31 @@ flowchart TB
 ```
 
 Solid arrows are the cycle; dotted arrows are the feedback loops that keep the
-plan honest — the generator records where reality diverged from the plan, the
+plan honest: the generator records where reality diverged from the plan, the
 healer marks a spec stale when the business flow itself changed, and every
 repair lands in the heal journal the planner reads next time.
 
-## The three agents
+## The four agents
 
 | Agent | Command | What it does |
 |-------|---------|--------------|
 | **rf-planner** | `/rf-plan` | Explores the live application through rf-mcp (perceive → act → perceive, ARIA snapshots, real API responses) and writes a business-readable test plan under `specs/`. Every fact in the plan was observed live, never assumed. |
 | **rf-generator** | `/rf-generate` | Turns one `specs/` plan into a runnable `.robot` suite. Its defining discipline: **no step lands in a file before it was executed live** through rf-mcp. Missing business keywords are added to the resource layer (page objects), never inlined in tests. |
 | **rf-healer** | `/rf-heal` | Repairs a failing suite by fixing the **automation layer** (`resources/`), never by weakening what the test proves. Locator drift, timing, data drift and genuine functional changes each get their own treatment; genuine flow changes go back to the planner. |
+| **rf-istqb** | `/rf-istqb` | Offline test designer (no rf-mcp session): turns planner specs and recorder outputs (rf-web-recorder exports and drafts) into an **ISTQB test plan + test cases** document under `specs/istqb/` (ISO 29119-3 sections, one test case per scenario, and a normalized framework-neutral `replay` YAML block per case: human-readable AND replayable by an AI with any test framework). What no source supports stays marked « à compléter »; it never edits `tests/robot/` or `resources/`. Ported from the SAPFX `sap-istqb` agent. |
 
 `/rf-generate-all` chains the generator over every eligible spec (sequentially
-— shared page objects and one live session don't parallelize).
+shared page objects and one live session don't parallelize).
 
 The cycle is closed by mechanical guards and explicit feedback loops:
 
-- **Provenance** — each generated suite embeds the content hash (+ date) of
+- **Provenance**: each generated suite embeds the content hash (+ date) of
   its source spec; `python scripts/check_spec_sync.py` fails whenever a spec
-  changed without regeneration — **the plan is the source of truth**.
-- **Conventions** — `python scripts/check_conventions.py` mechanically rejects
+  changed without regeneration: **the plan is the source of truth**.
+- **Conventions**: `python scripts/check_conventions.py` mechanically rejects
   raw locators in test bodies and any `Sleep` (generator gate, post-edit hook
   in `.claude/settings.json`, CI).
-- **Feedback loops** — the healer marks a functionally-changed spec
+- **Feedback loops**: the healer marks a functionally-changed spec
   `> **Statut : PÉRIMÉE (date)**` (blocks the guard until the planner
   re-explores); the generator records reality/spec divergences in the spec
   (« Écarts constatés à la génération ») before re-stamping; every repair is
@@ -86,7 +87,7 @@ The cycle is closed by mechanical guards and explicit feedback loops:
 2. **Never `Sleep` to wait.** Real synchronization only (`Wait For Elements
    State`, `Wait Until Element Is Visible`, `Wait Until Keyword Succeeds`).
 3. **Robust assertions.** Stable ids, ARIA role + accessible name,
-   `data-testid`, HTTP status codes, JSON field names, counts — never a
+   `data-testid`, HTTP status codes, JSON field names, counts, never a
    localized display text when a stable anchor exists.
 4. **Never fabricate locators.** Every locator was observed/probed live before
    being committed.
@@ -96,14 +97,14 @@ The cycle is closed by mechanical guards and explicit feedback loops:
 ## Layout
 
 ```text
-.claude/agents/        rf-planner / rf-generator / rf-healer (canonical definitions)
+.claude/agents/        rf-planner / rf-generator / rf-healer / rf-istqb (canonical definitions)
 .claude/commands/      /rf-plan  /rf-generate  /rf-generate-all  /rf-heal
 .claude/settings.json  post-edit hook running both guards
 .mcp.json              rf-mcp server declaration (project scope)
 specs/                 business test plans (source of truth)
-resources/             common.resource + page_objects/ — the layer agents write & heal
+resources/             common.resource + page_objects/: the layer agents write & heal
 variables/             env_<env>.yaml, shared locators.py (never credentials)
-tests/robot/           generated suites — api/ · ui/web/ · ui/mobile/ · cross/
+tests/robot/           generated suites: api/ · ui/web/ · ui/mobile/ · cross/
 tests/unit/            pytest tests of the guard scripts
 scripts/               check_spec_sync.py · check_conventions.py · hook_guards.py
 docs/                  heal-journal.md (drift memory) · validation-live.md (runbook)
