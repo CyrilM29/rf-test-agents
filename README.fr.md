@@ -2,12 +2,12 @@
 
 # rf-test-agents
 
-**Agents de test universels pour Robot Framework — plan → generate → heal —
+**Agents de test universels pour Robot Framework : plan → generate → heal,
 pilotés sur l'application vivante via le serveur
 [rf-mcp](https://github.com/manykarim/rf-mcp) (RobotMCP).**
 
 Indépendants de la technologie : les agents fonctionnent avec toute
-bibliothèque Robot Framework que rf-mcp peut charger — web (Browser/Playwright,
+bibliothèque Robot Framework que rf-mcp peut charger : web (Browser/Playwright,
 SeleniumLibrary), APIs HTTP (RequestsLibrary), mobile (AppiumLibrary), bases de
 données… Ils transposent l'idée des Playwright Test Agents
 (planner / generator / healer) à l'écosystème Robot Framework, généralisés
@@ -15,7 +15,7 @@ depuis les agents SAP du projet SAPFX (même auteur). Licence : Apache-2.0.
 
 ```mermaid
 flowchart TB
-    APP(["Application vivante — web · API · mobile"])
+    APP(["Application vivante : web · API · mobile"])
     MCP{{"rf-mcp · percevoir → agir → percevoir"}}
 
     subgraph CYCLE ["plan → generate → heal"]
@@ -48,33 +48,34 @@ flowchart TB
 ```
 
 Les flèches pleines sont le cycle ; les pointillés sont les boucles de
-rétroaction qui gardent le plan honnête — le generator consigne les écarts
+rétroaction qui gardent le plan honnête : le generator consigne les écarts
 entre le plan et la réalité, le healer marque une spec périmée quand c'est le
 flux métier lui-même qui a changé, et chaque réparation atterrit dans le
 journal de guérison que le planner relit à sa passe suivante.
 
-## Les trois agents
+## Les quatre agents
 
 | Agent | Commande | Ce qu'il fait |
 |-------|----------|---------------|
 | **rf-planner** | `/rf-plan` | Explore l'application vivante via rf-mcp (percevoir → agir → percevoir, snapshots ARIA, vraies réponses API) et écrit un plan de test lisible métier dans `specs/`. Chaque fait du plan a été observé live, jamais supposé. |
 | **rf-generator** | `/rf-generate` | Transforme UN plan `specs/` en suite `.robot` exécutable. Sa discipline fondatrice : **aucune étape n'atterrit dans un fichier avant d'avoir été exécutée live** via rf-mcp. Les keywords métier manquants rejoignent la couche resources (page objects), jamais le corps des tests. |
 | **rf-healer** | `/rf-heal` | Répare une suite en échec en corrigeant la **couche d'automatisation** (`resources/`), jamais en affaiblissant ce que le test prouve. Dérive de localisateur, timing, dérive de données et vrai changement fonctionnel ont chacun leur traitement ; un vrai changement de flux repart chez le planner. |
+| **rf-istqb** | `/rf-istqb` | Concepteur de tests **hors ligne** (aucune session rf-mcp) : transforme les plans du planner et les sorties d'enregistrement (exports et brouillons rf-web-recorder) en un document **plan de test + cas de test ISTQB** sous `specs/istqb/` (sections ISO 29119-3, un cas de test par scénario, bloc `replay` YAML normalisé neutre vis-à-vis du framework : lisible par un humain ET rejouable par une IA avec n'importe quel framework de test). Ce qu'aucune source n'appuie reste « à compléter » ; il ne touche jamais `tests/robot/` ni `resources/`. Porté de l'agent `sap-istqb` de SAPFX. |
 
 `/rf-generate-all` enchaîne le generator sur tous les plans éligibles
-(séquentiellement — page objects partagés et session live unique ne se
+(séquentiellement : page objects partagés et session live unique ne se
 parallélisent pas).
 
 Le cycle est fermé par des gardes mécaniques et des boucles de rétroaction
 explicites :
 
-- **Provenance** — chaque suite générée embarque le hash (+ date) de son plan
+- **Provenance** : chaque suite générée embarque le hash (+ date) de son plan
   source ; `python scripts/check_spec_sync.py` échoue dès qu'un plan change
-  sans régénération — **le plan est la source de vérité**.
-- **Conventions** — `python scripts/check_conventions.py` rejette
+  sans régénération : **le plan est la source de vérité**.
+- **Conventions** : `python scripts/check_conventions.py` rejette
   mécaniquement les localisateurs bruts dans les corps de test et tout `Sleep`
   (gate du generator, hook post-édition dans `.claude/settings.json`, CI).
-- **Boucles de rétroaction** — le healer marque un plan fonctionnellement
+- **Boucles de rétroaction** : le healer marque un plan fonctionnellement
   changé `> **Statut : PÉRIMÉE (date)**` (le garde bloque jusqu'à la
   ré-exploration par le planner) ; le generator consigne les écarts
   réalité/plan dans le plan lui-même (« Écarts constatés à la génération »)
@@ -91,7 +92,7 @@ explicites :
    (`Wait For Elements State`, `Wait Until Element Is Visible`,
    `Wait Until Keyword Succeeds`).
 3. **Assertions robustes.** Ids stables, rôle ARIA + nom accessible,
-   `data-testid`, codes HTTP, champs JSON, comptes — jamais un libellé localisé
+   `data-testid`, codes HTTP, champs JSON, comptes, jamais un libellé localisé
    quand une ancre stable existe.
 4. **Jamais de localisateur inventé.** Chaque localisateur a été observé/sondé
    live avant d'être committé.
@@ -101,14 +102,14 @@ explicites :
 ## Arborescence
 
 ```text
-.claude/agents/        rf-planner / rf-generator / rf-healer (définitions canoniques)
+.claude/agents/        rf-planner / rf-generator / rf-healer / rf-istqb (définitions canoniques)
 .claude/commands/      /rf-plan  /rf-generate  /rf-generate-all  /rf-heal
 .claude/settings.json  hook post-édition lançant les deux gardes
 .mcp.json              déclaration du serveur rf-mcp (portée projet)
 specs/                 plans de test métier (source de vérité)
-resources/             common.resource + page_objects/ — la couche que les agents écrivent et réparent
+resources/             common.resource + page_objects/ : la couche que les agents écrivent et réparent
 variables/             env_<env>.yaml, locators.py partagé (jamais de credentials)
-tests/robot/           suites générées — api/ · ui/web/ · ui/mobile/ · cross/
+tests/robot/           suites générées : api/ · ui/web/ · ui/mobile/ · cross/
 tests/unit/            tests pytest des scripts de garde
 scripts/               check_spec_sync.py · check_conventions.py · hook_guards.py
 docs/                  heal-journal.md (mémoire des dérives) · validation-live.md (runbook)

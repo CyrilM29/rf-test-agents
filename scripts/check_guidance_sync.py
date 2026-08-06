@@ -2,8 +2,8 @@
 les définitions d'agents (``.claude/agents/rf-*.md``).
 
 Ce dépôt assume une duplication : les conventions et le rituel de session
-rf-mcp vivent à la fois dans CLAUDE.md et dans les trois définitions d'agents
-(convention #8, « quadruplicated by design » — un agent ne lit pas CLAUDE.md
+rf-mcp vivent à la fois dans CLAUDE.md et dans les définitions d'agents
+(convention #8, « quadruplicated by design » : un agent ne lit pas CLAUDE.md
 au moment où il travaille, il lit sa propre définition). Le prix de cette
 duplication, c'est la dérive : une convention reformulée ici et oubliée là.
 
@@ -16,12 +16,12 @@ Ce garde-fou la rend visible. Pour chaque convention suivie, il vérifie :
 2. que chaque définition d'agent porte encore le marqueur correspondant.
 
 Ce n'est **pas** un générateur : CLAUDE.md est de la prose libre destinée à des
-lecteurs humains/IA, pas une donnée structurée — en extraire mécaniquement du
+lecteurs humains/IA, pas une donnée structurée : en extraire mécaniquement du
 texte produirait des définitions d'agents de piètre qualité. C'est un garde de
 COHÉRENCE, dans le même esprit que ``check_spec_sync.py`` (provenance) et
 ``check_conventions.py`` (artefacts). Porté depuis le projet SAPFX (même
 auteur), où il couvre en plus les hints du serveur MCP et les cartes de
-keywords des plugins — hors sujet ici, ce dépôt n'ayant pas de plugin.
+keywords des plugins : hors sujet ici, ce dépôt n'ayant pas de plugin.
 
 Usage : python scripts/check_guidance_sync.py
 """
@@ -62,7 +62,7 @@ def check() -> list[str]:
     for num, anchor in _TRACKED:
         if anchor not in claude_md:
             problems.append(
-                "CLAUDE.md convention #%d : passage attendu introuvable (%r) — "
+                "CLAUDE.md convention #%d : passage attendu introuvable (%r), "
                 "reformulée/déplacée ? Mettre à jour "
                 "scripts/check_guidance_sync.py." % (num, anchor))
 
@@ -70,7 +70,7 @@ def check() -> list[str]:
         if _AGENTS_DIR.is_dir() else []
     if not agent_files:
         problems.append(
-            "aucune définition d'agent rf-*.md sous %s — déplacées/renommées ? "
+            "aucune définition d'agent rf-*.md sous %s : déplacées/renommées ? "
             "Mettre à jour scripts/check_guidance_sync.py." % _AGENTS_DIR)
     for path in agent_files:
         text = path.read_text(encoding="utf-8").lower()
@@ -78,12 +78,12 @@ def check() -> list[str]:
             if marker not in text:
                 problems.append(
                     "convention #%d : la définition d'agent %s ne mentionne "
-                    "plus %r — a-t-elle dérivé ?" % (num, path.name, marker))
+                    "plus %r : a-t-elle dérivé ?" % (num, path.name, marker))
         # Convention #8 : chaque agent porte la note de synchronisation qui
         # rappelle que ces règles existent en quatre exemplaires.
         if "sync note" not in text:
             problems.append(
-                "convention #8 : %s a perdu sa « Sync note » — le rappel que "
+                "convention #8 : %s a perdu sa « Sync note », le rappel que "
                 "les ground rules doivent être modifiées dans les quatre "
                 "fichiers à la fois." % path.name)
     return problems
@@ -94,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     problems = check()
     if not problems:
-        print("[check_guidance_sync] OK — conventions portées par les %d "
+        print("[check_guidance_sync] OK : conventions portées par les %d "
               "définitions d'agents." % len(list(_AGENTS_DIR.glob("rf-*.md"))))
         return 0
     print("[check_guidance_sync] ÉCHEC :")
