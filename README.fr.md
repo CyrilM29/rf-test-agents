@@ -105,7 +105,9 @@ explicites :
 .claude/agents/        rf-planner / rf-generator / rf-healer / rf-istqb (définitions canoniques)
 .claude/commands/      /rf-plan  /rf-generate  /rf-generate-all  /rf-heal
 .claude/settings.json  hook post-édition lançant les deux gardes
-.mcp.json              déclaration du serveur rf-mcp (portée projet)
+.mcp.json              déclaration du serveur rf-mcp (Claude Code, portée projet)
+.vscode/mcp.json       le même serveur rf-mcp, format VS Code (GitHub Copilot)
+.github/chatmodes/     les agents en chat modes VS Code / Copilot (générés, ne pas éditer)
 specs/                 plans de test métier (source de vérité)
 resources/             common.resource + page_objects/ : la couche que les agents écrivent et réparent
 variables/             env_<env>.yaml, locators.py partagé (jamais de credentials)
@@ -133,6 +135,14 @@ Ouvrir le dossier dans Claude Code (ou tout hôte d'agents compatible MCP) :
 /rf-generate specs/parcours-connexion.md
 /rf-heal     tests/robot/ui/web/parcours_connexion.robot
 ```
+
+Avec **GitHub Copilot dans VS Code**, rien à configurer : `.vscode/mcp.json`
+déclare le même serveur rf-mcp (le démarrer depuis la vue des serveurs MCP au
+premier usage), et les agents sont disponibles en chat modes. Choisir
+`rf-planner`, `rf-generator`, `rf-healer` ou `rf-istqb` dans le sélecteur de
+mode du chat, à la place des slash commands. Les chat modes sont générés
+depuis `.claude/agents/` par `scripts/regen_agent_definitions.py` : modifier
+l'agent, puis régénérer.
 
 ## Lien avec SAPFX
 

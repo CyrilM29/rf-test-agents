@@ -57,6 +57,7 @@ Channels: web (Browser/Playwright or SeleniumLibrary), HTTP APIs
 | `.claude/commands/` | Slash commands `/rf-plan`, `/rf-generate`, `/rf-generate-all` (batch, sequential), `/rf-heal`. |
 | `.claude/settings.json` | Project hooks: after every Write/Edit of specs/tests/resources/variables, `scripts/hook_guards.py` runs both guards (conventions violations block; spec-sync drift is reported non-blocking). |
 | `.mcp.json` | rf-mcp server declaration (`robotmcp --transport stdio --without-frontend`); the console script survives rf-mcp 0.35 unchanged: see « rf-mcp compatibility notes ». |
+| `.vscode/mcp.json` | The same rf-mcp declaration in VS Code's MCP format, so the generated chat modes work under GitHub Copilot. The server key MUST stay `rf-mcp`: the chat modes reference tools as `rf-mcp/<tool>`. |
 | `specs/` | Business test plans (Markdown, French): **the source of truth**. See its README for the contract. `specs/istqb/` holds the ISTQB test plans + test cases written by rf-istqb (test-design documentation, outside `check_spec_sync.py`'s scope). |
 | `resources/common.resource` | Cross-page business keywords + global Setup/Teardown wrappers. |
 | `resources/page_objects/` | ONE `.resource` per page/screen/API domain: locator variables on top, business keywords below. The layer the generator writes and the healer patches. |
@@ -192,3 +193,7 @@ conceptually aligned but have no code dependency.
       `PYTHONIOENCODING=utf-8:surrogateescape` crashes Robot's console writer
       under PowerShell: run `robot` from Bash, or set `PYTHONIOENCODING=utf-8`.
       Details in `docs/validation-live.md`.
+- [x] Turnkey GitHub Copilot experience (2026-08-06): `.vscode/mcp.json`
+      declares rf-mcp in VS Code's format (server key `rf-mcp`, matching the
+      `rf-mcp/<tool>` references in the generated chat modes); Copilot setup
+      documented in both READMEs' Quickstart.
