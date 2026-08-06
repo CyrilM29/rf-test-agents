@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Page object — page panier Sauce Demo (/cart.html).
+Documentation     Page object : page panier Sauce Demo (/cart.html).
 ...               Localisateurs sondés live le 2026-07-24 (rf-mcp, Browser
 ...               chromium headless). Les URLs viennent de
 ...               variables/env_demo.yaml, importé par la suite.

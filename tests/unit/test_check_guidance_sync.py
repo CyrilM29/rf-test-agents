@@ -17,7 +17,7 @@ import check_guidance_sync as guard  # noqa: E402
 
 class TestDepotReel:
     def test_conventions_portees_par_les_agents(self):
-        """L'état committé doit être aligné — c'est ce que joue la CI."""
+        """L'état committé doit être aligné : c'est ce que joue la CI."""
         assert guard.check() == []
 
     def test_toutes_les_conventions_suivies_existent_dans_claude_md(self):
@@ -42,7 +42,7 @@ class TestDetection:
         return "\n".join(anchor for _, anchor in guard._TRACKED)
 
     def _full_agent(self):
-        return ("Sync note — resources/ ; time.sleep interdit ; "
+        return ("Sync note : resources/ ; time.sleep interdit ; "
                 "mots de passe en Secret: sur la ligne de commande.")
 
     def test_repo_aligne_ne_signale_rien(self, tmp_path, monkeypatch):

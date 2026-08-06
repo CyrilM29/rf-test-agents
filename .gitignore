@@ -17,9 +17,9 @@ output.xml
 !.vscode/extensions.json
 !.vscode/mcp.json
 
-# Secrets — never commit credentials
+# Secrets, never commit credentials
 *.secret
 .env
 
-# Communication base — kept local, not published with the repo
+# Communication base: kept local, not published with the repo
 comms/

@@ -1,7 +1,7 @@
-# memory/ — AI assistants' project memory
+# memory/: AI assistants' project memory
 
 Persistent working notes for AI assistants (Claude Code, GitHub Copilot,
-Codex…) working on this repo. **Committed and public-safe** — non-negotiable
+Codex…) working on this repo. **Committed and public-safe**: non-negotiable
 rules:
 
 1. **Anonymized**: no personal data (name, e-mail, account), no machine
@@ -10,7 +10,7 @@ rules:
 2. **One entry = one durable project fact**: a costly debugging lesson, a
    decision with its context, a generic environment procedure. No session
    journals, no duplication of the repo docs (CLAUDE.md stays canonical).
-3. **Absolute dates**; an entry is a dated observation, not live state —
+3. **Absolute dates**; an entry is a dated observation, not live state:
    verify before asserting.
 4. **`MEMORY.md` is the index**: one line per entry, updated in the same
    operation as any create/delete. Update rather than duplicate; delete what
@@ -21,7 +21,7 @@ Entry format:
 ```markdown
 ---
 name: slug-kebab-case
-description: one-line summary — decides whether the entry gets opened
+description: one-line summary, decides whether the entry gets opened
 type: projet | reference | recherche
 date: YYYY-MM-DD
 ---

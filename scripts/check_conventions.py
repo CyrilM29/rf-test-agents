@@ -1,12 +1,12 @@
-"""Garde mécanique des conventions #1 et #2 — celles qu'un linter peut prouver.
+"""Garde mécanique des conventions #1 et #2 : celles qu'un linter peut prouver.
 
 Les agents (rf-generator, rf-healer) promettent en prose que :
 
-* **convention #1** — les tests ne contiennent aucun localisateur brut :
+* **convention #1**, les tests ne contiennent aucun localisateur brut :
   CSS/XPath/stratégies (`css=`, `xpath=`, `//…`, `id=`, sélecteurs chaînés
   Browser `a >> b`) vivent dans ``resources/`` ou ``variables/locators.py``,
   jamais dans un fichier de ``tests/robot/`` ;
-* **convention #2** — jamais de ``Sleep`` : synchronisation réelle uniquement,
+* **convention #2**, jamais de ``Sleep`` : synchronisation réelle uniquement,
   dans les tests COMME dans la couche resources.
 
 Une règle en prose n'est pas un contrat : ce garde la rend mécanique. Il est
@@ -19,7 +19,7 @@ le garde.
 Limites assumées : détection par motifs sur les cellules Robot Framework
 (séparateur 2+ espaces ou tabulation) ; les blocs ``Documentation`` et les
 commentaires sont ignorés (on peut y CITER un localisateur). Un localisateur
-exotique peut passer — le garde attrape les violations franches, la revue
+exotique peut passer : le garde attrape les violations franches, la revue
 humaine garde le reste.
 
 Usage::
@@ -95,7 +95,7 @@ def scan_file(path: Path, forbid_locators: bool) -> list[tuple[int, str]]:
         for cell in cells:
             if _is_sleep(cell):
                 problems.append(
-                    (lineno, "Sleep interdit (convention #2) — utiliser la "
+                    (lineno, "Sleep interdit (convention #2) : utiliser la "
                              "synchronisation réelle de la bibliothèque"))
                 break
         if forbid_locators:
@@ -103,7 +103,7 @@ def scan_file(path: Path, forbid_locators: bool) -> list[tuple[int, str]]:
                 if _is_raw_locator(cell):
                     problems.append(
                         (lineno, "localisateur brut dans un test "
-                                 "(convention #1) : « %s » — le déplacer dans "
+                                 "(convention #1) : « %s », le déplacer dans "
                                  "resources/page_objects/ ou "
                                  "variables/locators.py" % cell))
     return problems
@@ -136,7 +136,7 @@ def check(repo_root: Path, targets: list[str] | None = None) -> int:
     if failed:
         print("[check_conventions] ÉCHEC (voir ci-dessus).")
         return 1
-    print("[check_conventions] OK — %d fichier(s), aucune violation." % total)
+    print("[check_conventions] OK : %d fichier(s), aucune violation." % total)
     return 0
 
 

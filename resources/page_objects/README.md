@@ -1,9 +1,9 @@
-# resources/page_objects/ — un `.resource` par page/écran/domaine API
+# resources/page_objects/ : un `.resource` par page/écran/domaine API
 
 Le patron *page object* en saveur Robot Framework : chaque fichier regroupe
 
 1. en tête, les **variables de localisateurs** de LA page (ids stables,
-   `data-testid`, rôle ARIA + nom accessible — jamais d'id généré) ;
+   `data-testid`, rôle ARIA + nom accessible, jamais d'id généré) ;
 2. en dessous, les **keywords métier** de cette page qui les utilisent.
 
 Exemples de noms : `login_page.resource`, `orders_list.resource`,

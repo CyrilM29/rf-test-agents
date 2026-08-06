@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Page object — page de connexion Sauce Demo (URL de base).
+Documentation     Page object : page de connexion Sauce Demo (URL de base).
 ...               Localisateurs sondés live le 2026-07-24 (rf-mcp, Browser
 ...               chromium headless). Les URLs viennent de
 ...               variables/env_demo.yaml, importé par la suite.
