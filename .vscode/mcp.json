@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "rf-mcp": {
+      "type": "stdio",
+      "command": "robotmcp",
+      "args": ["--transport", "stdio", "--without-frontend"]
+    }
+  }
+}

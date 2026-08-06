@@ -100,7 +100,9 @@ The cycle is closed by mechanical guards and explicit feedback loops:
 .claude/agents/        rf-planner / rf-generator / rf-healer / rf-istqb (canonical definitions)
 .claude/commands/      /rf-plan  /rf-generate  /rf-generate-all  /rf-heal
 .claude/settings.json  post-edit hook running both guards
-.mcp.json              rf-mcp server declaration (project scope)
+.mcp.json              rf-mcp server declaration (Claude Code, project scope)
+.vscode/mcp.json       same rf-mcp server, VS Code format (GitHub Copilot)
+.github/chatmodes/     the agents as VS Code / Copilot chat modes (generated, never edit)
 specs/                 business test plans (source of truth)
 resources/             common.resource + page_objects/: the layer agents write & heal
 variables/             env_<env>.yaml, shared locators.py (never credentials)
@@ -128,6 +130,13 @@ declares the rf-mcp server. Then:
 /rf-generate specs/login-flow.md
 /rf-heal     tests/robot/ui/web/login_flow.robot
 ```
+
+With **GitHub Copilot in VS Code**, no extra setup: `.vscode/mcp.json`
+declares the same rf-mcp server (start it from the MCP servers view on first
+use), and the agents are available as chat modes. Pick `rf-planner`,
+`rf-generator`, `rf-healer` or `rf-istqb` in the chat mode picker instead of
+the slash commands. The chat modes are generated from `.claude/agents/` by
+`scripts/regen_agent_definitions.py`: edit the agent, then regenerate.
 
 ## Relationship to SAPFX
 
