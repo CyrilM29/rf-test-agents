@@ -1,5 +1,5 @@
 ---
-description: Réparer un test Robot Framework en échec — diagnostic, vérification live via rf-mcp, patch de la couche resources (agent rf-healer)
+description: Réparer un test Robot Framework en échec, diagnostic, vérification live via rf-mcp, patch de la couche resources (agent rf-healer)
 ---
 
 Use the **rf-healer** agent to repair the failing Robot Framework test(s):

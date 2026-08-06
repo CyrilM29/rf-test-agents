@@ -31,7 +31,7 @@ def write_resource(repo: Path, body: str) -> Path:
 
 
 CLEAN_SUITE = """*** Settings ***
-Documentation     Générée depuis specs/x.md — on peut citer css=#exemple ici.
+Documentation     Générée depuis specs/x.md : on peut citer css=#exemple ici.
 ...               Suite de la doc, xpath=//aussi ignoré.
 Resource          ../../../../resources/page_objects/p.resource
 

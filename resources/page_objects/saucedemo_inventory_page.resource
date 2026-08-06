@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Page object — page inventaire Sauce Demo (/inventory.html).
+Documentation     Page object : page inventaire Sauce Demo (/inventory.html).
 ...               Localisateurs sondés live le 2026-07-24 (rf-mcp, Browser
 ...               chromium headless). Les URLs viennent de
 ...               variables/env_demo.yaml, importé par la suite.
@@ -8,7 +8,7 @@ Library           String
 
 
 *** Variables ***
-# Conteneur de la liste produits : ancre data-test, PAS l'id — sonde live du
+# Conteneur de la liste produits : ancre data-test, PAS l'id, sonde live du
 # 2026-07-24, #inventory_container matche 2 elements (un div vide sans classe
 # ni data-test + le vrai conteneur), tandis que
 # [data-test="inventory-container"] en matche exactement 1.

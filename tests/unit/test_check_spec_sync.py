@@ -113,7 +113,7 @@ class TestCheck:
 
 class TestSpecPerimee:
     STALE_SPEC = ("# Plan\n\n"
-                  "> **Statut : PÉRIMÉE (2026-07-24)** — le flux a changé ; "
+                  "> **Statut : PÉRIMÉE (2026-07-24)**, le flux a changé ; "
                   "re-explorer via /rf-plan.\n\nContenu.\n")
 
     def test_marqueur_perimee_bloque(self, tmp_path):
@@ -134,7 +134,7 @@ class TestSpecPerimee:
         stamp(repo)
         (repo / "specs" / "plan.md").write_text(
             self.STALE_SPEC.replace(
-                "> **Statut : PÉRIMÉE (2026-07-24)** — le flux a changé ; "
+                "> **Statut : PÉRIMÉE (2026-07-24)**, le flux a changé ; "
                 "re-explorer via /rf-plan.\n\n", ""),
             encoding="utf-8")
         # le retrait du marqueur change le hash : re-stamp requis (voulu)

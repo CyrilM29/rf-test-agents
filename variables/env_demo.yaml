@@ -1,4 +1,4 @@
-# Données d'environnement — boutique de démonstration Sauce Labs (canal web).
+# Données d'environnement : boutique de démonstration Sauce Labs (canal web).
 # Aucun credential ici (convention #6) : ${SAUCE_USER} / ${SAUCE_PASSWORD}
 # arrivent en variables de ligne de commande typées `Secret:`.
 #

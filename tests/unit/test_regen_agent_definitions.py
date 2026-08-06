@@ -20,7 +20,7 @@ description: Agent de démonstration.
 tools: Read, Glob, Write, Bash, mcp__rf-mcp__execute_step
 ---
 
-Corps de l'agent — instructions.
+Corps de l'agent : instructions.
 """
 
 

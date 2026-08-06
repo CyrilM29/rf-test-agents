@@ -1,6 +1,6 @@
 # CI du cycle plan -> generate -> heal : les gardes qui ne demandent pas de
 # système cible. Le dry run robot n'est volontairement PAS ici : il exige les
-# bibliothèques de canal (Browser/Selenium/...) déclarées par les suites — il
+# bibliothèques de canal (Browser/Selenium/...) déclarées par les suites : il
 # reste un gate local du rf-generator. Les gardes ci-dessous suffisent à
 # bloquer une dérive spec <-> suite ou une violation de convention commitée.
 name: guards
@@ -26,6 +26,10 @@ jobs:
         run: python scripts/check_spec_sync.py
       - name: Conventions guard (no raw locators in tests, no Sleep)
         run: python scripts/check_conventions.py
+      # Le tiret cadratin est le tic n°1 qui trahit un texte généré : la règle
+      # de rédaction est tenue mécaniquement, pas seulement énoncée.
+      - name: No em dash in repository prose
+        run: python scripts/check_no_em_dash.py
       # Les conventions vivent en quatre exemplaires (CLAUDE.md + 3 agents) :
       # ce garde attrape la reformulation faite ici et oubliée là.
       - name: Conventions propagated to the agent definitions

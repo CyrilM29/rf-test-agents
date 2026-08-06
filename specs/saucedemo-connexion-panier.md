@@ -1,12 +1,12 @@
-# Sauce Demo — Connexion et ajout au panier
+# Sauce Demo : Connexion et ajout au panier
 
 - **Canal** : web (Browser / Playwright, chromium headless)
-- **Système / URL** : https://www.saucedemo.com/ — titre de page `Swag Labs`
+- **Système / URL** : https://www.saucedemo.com/, titre de page `Swag Labs`
   (SPA React, boutique de démonstration Sauce Labs)
 - **Préconditions** :
   - Compte de démonstration standard fourni en variables de ligne de commande
     typées `Secret:` : `${SAUCE_USER}` / `${SAUCE_PASSWORD}` (jamais écrites
-    dans un fichier du dépôt — cf. convention #6).
+    dans un fichier du dépôt : cf. convention #6).
   - État initial attendu : panier vide (aucun badge sur l'icône panier).
   - Aucune persistance côté serveur : l'état panier vit dans le stockage local
     de la session navigateur. Un navigateur neuf repart donc panier vide.
@@ -15,22 +15,22 @@
 
 Exploration live du 2026-07-24 (rf-mcp, Browser chromium headless).
 
-### Page de connexion — `https://www.saucedemo.com/`
+### Page de connexion, `https://www.saucedemo.com/`
 
 | Élément | Ancre stable observée | Rôle ARIA / nom accessible |
 |---|---|---|
 | Champ identifiant | `id=user-name`, `data-test=username`, `name=user-name` | `textbox "Username"` |
 | Champ mot de passe | `id=password`, `data-test=password`, `type=password` | `textbox "Password"` |
 | Bouton de connexion | `id=login-button`, `data-test=login-button` (`input[type=submit]`, `value=Login`) | `button "Login"` |
-| Conteneur d'erreur | `div.error-message-container` (vide hors erreur) | — |
+| Conteneur d'erreur | `div.error-message-container` (vide hors erreur) | : |
 | Message d'erreur | `data-test=error` (balise `h3`) | `heading [level=3]` |
 | Bouton de fermeture de l'erreur | `data-test=error-button` (`button.error-button`) | `button` **sans nom accessible** |
 
 - Les identifiants de démonstration sont affichés sur la page elle-même
-  (`data-test=login-credentials` / `data-test=login-password`) — ils ne sont
+  (`data-test=login-credentials` / `data-test=login-password`) : ils ne sont
   pas une donnée de test à recopier, la suite doit passer par les variables.
 
-### Connexion en échec — faits relevés
+### Connexion en échec : faits relevés
 
 - Identifiant valide + mot de passe erroné : **aucune navigation**, l'URL reste
   `https://www.saucedemo.com/`.
@@ -46,7 +46,7 @@ Exploration live du 2026-07-24 (rf-mcp, Browser chromium headless).
   DOM** (état `detached`, pas seulement masqué) et `.error-message-container`
   redevient vide. Les valeurs saisies dans les deux champs sont **conservées**.
 
-### Page inventaire — `https://www.saucedemo.com/inventory.html`
+### Page inventaire, `https://www.saucedemo.com/inventory.html`
 
 Atteinte par redirection après connexion réussie (l'URL est le marqueur de
 succès le plus robuste).
@@ -55,8 +55,8 @@ succès le plus robuste).
 |---|---|
 | En-tête | `id=header_container`, `data-test=header-container` / `data-test=primary-header` |
 | Titre de page | `data-test=title` (texte `Products`) |
-| Bouton menu burger | `id=react-burger-menu-btn` — `button "Open Menu"` |
-| Bouton fermeture menu | `id=react-burger-cross-btn` — `button "Close Menu"` |
+| Bouton menu burger | `id=react-burger-menu-btn` : `button "Open Menu"` |
+| Bouton fermeture menu | `id=react-burger-cross-btn` : `button "Close Menu"` |
 | Menu : Tous les articles | `id=inventory_sidebar_link`, `data-test=inventory-sidebar-link` |
 | Menu : À propos | `id=about_sidebar_link`, `data-test=about-sidebar-link` |
 | Menu : Déconnexion | `id=logout_sidebar_link`, `data-test=logout-sidebar-link` |
@@ -64,7 +64,7 @@ succès le plus robuste).
 | Lien panier | `data-test=shopping-cart-link` (`a.shopping_cart_link`, **sans `id`, sans `href`**) |
 | Badge panier | `data-test=shopping-cart-badge` (`span.shopping_cart_badge`) |
 | Liste produits | `data-test=inventory-container` / `id=inventory_container` |
-| Fiche produit (répétée) | `data-test=inventory-item` — **6 occurrences** |
+| Fiche produit (répétée) | `data-test=inventory-item` : **6 occurrences** |
 | Nom produit | `data-test=inventory-item-name` |
 | Prix produit | `data-test=inventory-item-price` |
 | Tri | `select` `data-test=product-sort-container` (4 options : `Name (A to Z)` sélectionnée par défaut, `Name (Z to A)`, `Price (low to high)`, `Price (high to low)`) |
@@ -87,7 +87,7 @@ succès le plus robuste).
   d'éléments = 0 vérifié avant ajout), puis présent avec le texte `1` après
   l'ajout d'un article.
 
-### Page panier — `https://www.saucedemo.com/cart.html`
+### Page panier, `https://www.saucedemo.com/cart.html`
 
 | Élément | Ancre stable observée |
 |---|---|
@@ -95,7 +95,7 @@ succès le plus robuste).
 | Conteneur | `id=cart_contents_container`, `data-test=cart-contents-container` |
 | Liste | `data-test=cart-list` |
 | En-têtes de colonnes | `data-test=cart-quantity-label` (`QTY`), `data-test=cart-desc-label` (`Description`) |
-| Ligne de panier | `data-test=inventory-item` — **1 occurrence** après l'ajout |
+| Ligne de panier | `data-test=inventory-item` : **1 occurrence** après l'ajout |
 | Quantité | `data-test=item-quantity` (texte `1`) |
 | Nom article | `data-test=inventory-item-name` (`Sauce Labs Backpack`) |
 | Prix article | `data-test=inventory-item-price` (`$29.99`) |
@@ -105,7 +105,7 @@ succès le plus robuste).
 
 - Après clic sur le bouton de retrait : le badge `data-test=shopping-cart-badge`
   passe à l'état `detached` et le compte de `data-test=inventory-item` retombe
-  à **0** — la remise à l'état initial est donc vérifiable.
+  à **0** : la remise à l'état initial est donc vérifiable.
 
 ### Déconnexion et garde de session
 
@@ -156,7 +156,7 @@ succès le plus robuste).
     `https://www.saucedemo.com/` (pas de `/inventory.html`).
   - Le bandeau d'erreur (`data-test=error`) est visible et son texte vaut
     exactement `Epic sadface: Username and password do not match any user in
-    this service` — le texte est ici **discriminant** (l'ancre seule ne
+    this service` : le texte est ici **discriminant** (l'ancre seule ne
     distingue pas ce cas de « champ obligatoire »), cf. § Points de vigilance.
   - Après fermeture : l'élément `data-test=error` est **détaché du DOM**, et le
     formulaire reste utilisable (les valeurs saisies sont conservées).
@@ -176,7 +176,7 @@ succès le plus robuste).
   5. Vérifier que le bouton de la fiche produit propose désormais le retrait.
   6. Ouvrir le panier via l'icône panier.
   7. Vérifier le contenu du panier (nombre de lignes, nom, quantité, prix).
-  8. **Réversibilité** — retirer l'article depuis le panier.
+  8. **Réversibilité** : retirer l'article depuis le panier.
   9. Vérifier le retour à l'état initial.
   10. Se déconnecter via le menu latéral.
 - **Résultat attendu** :
@@ -209,7 +209,7 @@ succès le plus robuste).
   localisateurs distincts, à dériver du slug du produit dans le page object.
 - **Le slug produit n'est pas toujours trivial** : `Test.allTheThings()
   T-Shirt (Red)` donne `add-to-cart-test.allthethings()-t-shirt-(red)`, qui
-  contient des points et des parenthèses — caractères à échapper si le
+  contient des points et des parenthèses : caractères à échapper si le
   localisateur est construit en CSS. Préférer une construction par
   `data-test=` exact, ou un ancrage relatif à la fiche produit
   (`data-test=inventory-item` filtrée sur `data-test=inventory-item-name`).
@@ -250,7 +250,7 @@ succès le plus robuste).
 - **Pas de persistance serveur** : le panier vit dans la session navigateur.
   L'étape de retrait suffit à restaurer l'état initial ; en filet de sécurité,
   le menu latéral expose `id=reset_sidebar_link` (`Reset App State`).
-- **Identifiants** : jamais en dur dans la suite ni dans `variables/` —
+- **Identifiants** : jamais en dur dans la suite ni dans `variables/`,
   `${SAUCE_USER}` / `${SAUCE_PASSWORD}` en variables de ligne de commande
   typées `Secret:` (convention #6). Les identifiants de démonstration sont
   affichés sur la page de connexion, ce qui ne change rien à cette règle.
@@ -268,7 +268,7 @@ rejoués live et confirmés. Les écarts ci-dessous sont d'ordre technique
    `Secret:` », sans syntaxe précise ; la consigne de génération proposait
    `-v "SAUCE_PASSWORD:Secret:<valeur>"`.
    *Observé* : Robot Framework 7.4.2 n'accepte le typage que sous la forme
-   `NOM: <type>:<valeur>` — **avec une espace après le deux-points du nom**
+   `NOM: <type>:<valeur>`, **avec une espace après le deux-points du nom**
    (`robot/variables/scopes.py`, motif `([^:]+): ([^:]+):(.*)`). Sans cette
    espace, la variable vaut la chaîne littérale `Secret:<valeur>` et
    `Fill Secret` la refuse (`Direct assignment of values or variables as
@@ -279,11 +279,11 @@ rejoués live et confirmés. Les écarts ci-dessous sont d'ordre technique
 
 2. **Un `Secret` ne peut pas être fabriqué à partir d'un littéral.**
    *Observé* : `${X: secret}    valeur` dans une section `*** Variables ***`
-   échoue (`Value must have type 'Secret', got string`) — par conception, un
+   échoue (`Value must have type 'Secret', got string`) : par conception, un
    secret ne peut venir que de la ligne de commande ou d'un fichier de
    variables. Or `Fill Secret` refuse le texte brut.
    *Conséquence sur la couche resources* : deux primitives de saisie
-   distinctes dans `saucedemo_login_page.resource` —
+   distinctes dans `saucedemo_login_page.resource` :
    `Saisir Les Identifiants` (`Fill Secret`, exige un `Secret`) pour la
    connexion nominale, et `Saisir Des Identifiants Volontairement Invalides`
    (`Fill Text`) pour le scénario 2, dont le mot de passe faux

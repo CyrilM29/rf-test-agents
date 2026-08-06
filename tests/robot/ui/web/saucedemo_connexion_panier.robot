@@ -1,12 +1,12 @@
 *** Settings ***
-Documentation     Sauce Demo — connexion et ajout au panier (canal web).
-...                 Spec: specs/saucedemo-connexion-panier.md (sha256:0d67971a7d12, 2026-07-24)
+Documentation     Sauce Demo : connexion et ajout au panier (canal web).
+...                 Spec: specs/saucedemo-connexion-panier.md (sha256:e81fe483f892, 2026-08-04)
 ...               Browser / Playwright, chromium headless.
 ...               Generated from specs/saucedemo-connexion-panier.md by
-...               rf-generator — re-run the generator rather than hand-editing
+...               rf-generator : re-run the generator rather than hand-editing
 ...               locators here.
 ...               Exécution (mot de passe typé Secret: sur la ligne de
-...               commande, jamais dans un fichier — convention #6 ; noter
+...               commande, jamais dans un fichier : convention #6 ; noter
 ...               l'espace après « SAUCE_PASSWORD: », exigé par la syntaxe de
 ...               typage des variables -v de Robot Framework 7.4) :
 ...               robot --outputdir results -v "SAUCE_USER:standard_user"
@@ -49,7 +49,7 @@ Connexion Réussie Avec Des Identifiants Valides
 
 Connexion Refusée Avec Un Mot De Passe Erroné
     [Documentation]    Scénario 2 du plan : identifiant valide + mot de passe
-    ...    erroné — aucune navigation, message d'erreur discriminant, puis
+    ...    erroné : aucune navigation, message d'erreur discriminant, puis
     ...    fermeture du bandeau sans perte de la saisie.
     [Tags]    connexion    negatif
     La Page De Connexion Doit Être Affichée

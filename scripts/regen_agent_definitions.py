@@ -9,14 +9,14 @@ encore à la source. C'est la réponse mécanique à la convention #7 de ce dép
 (« les définitions de `.claude/agents/` sont la source canonique ; si d'autres
 formats d'assistants en sont dérivés, les GÉNÉRER, jamais les forker »).
 
-Le corps (les instructions de l'agent) est copié tel quel — seul le
+Le corps (les instructions de l'agent) est copié tel quel : seul le
 frontmatter change de dialecte :
 
 - Claude Code : ``name``/``description``/``tools``, outils MCP nommés
   ``mcp__<serveur>__<outil>`` ;
-- VS Code / Copilot : ``description``/``tools`` en formes **qualifiées** —
+- VS Code / Copilot : ``description``/``tools`` en formes **qualifiées**,
   ``jeu/outil`` pour les builtins (``search/readFile``, ``edit/editFiles``…)
-  et ``<serveur-mcp>/<outil>`` pour les outils MCP — le dialecte qu'émet le
+  et ``<serveur-mcp>/<outil>`` pour les outils MCP : le dialecte qu'émet le
   générateur de référence de Playwright
   (``packages/playwright/src/agents/generateAgents.ts``), granularité
   par outil préservée.
@@ -64,7 +64,7 @@ VSCODE_TOOLS_ORDER = [
 ]
 
 _BANNER = (
-    "<!-- FICHIER GÉNÉRÉ — ne pas éditer. Source : {source} ;\n"
+    "<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : {source} ;\n"
     "     régénérer : python scripts/regen_agent_definitions.py -->"
 )
 
@@ -78,7 +78,7 @@ def _read_text(path):
 
 def parse_front_matter(text):
     """Sépare ``(méta, corps)`` d'un markdown à frontmatter YAML *plat*
-    (``clé: valeur`` par ligne — le seul dialecte utilisé par nos agents)."""
+    (``clé: valeur`` par ligne, le seul dialecte utilisé par nos agents)."""
     if not text.startswith("---\n"):
         raise ValueError("missing front matter (expected leading '---')")
     try:
@@ -126,8 +126,8 @@ def map_tools(tools_value):
 
 def render_chatmode(source_rel, meta, body):
     """Rend un chat mode VS Code depuis (méta, corps) d'une définition Claude
-    Code. Les valeurs du frontmatter sont sérialisées en JSON — sous-ensemble
-    de YAML — pour un échappement correct sans dépendance."""
+    Code. Les valeurs du frontmatter sont sérialisées en JSON : sous-ensemble
+    de YAML : pour un échappement correct sans dépendance."""
     for required in ("description", "tools"):
         if required not in meta:
             raise ValueError("front matter of %s lacks %r" % (source_rel, required))

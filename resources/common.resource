@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Cross-page business vocabulary — global Setup/Teardown
+Documentation     Cross-page business vocabulary : global Setup/Teardown
 ...               wrappers and keywords shared by several pages/screens.
 ...               Page-scoped keywords and locators belong to
 ...               resources/page_objects/<page>.resource, never here.
@@ -8,7 +8,7 @@ Documentation     Cross-page business vocabulary — global Setup/Teardown
 ...
 ...               Sauce Demo (canal web) : ouverture/fermeture du navigateur,
 ...               connexion, déconnexion et en-tête partagé (menu latéral,
-...               icône panier) — l'en-tête est commun à /inventory.html et
+...               icône panier) : l'en-tête est commun à /inventory.html et
 ...               /cart.html, il n'appartient donc à aucun page object.
 ...               Ancres sondées live le 2026-07-24 (rf-mcp, Browser chromium
 ...               headless). Données d'environnement : variables/env_demo.yaml.
