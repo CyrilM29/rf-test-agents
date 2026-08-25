@@ -21,6 +21,19 @@ tell of AI-generated text, and it is **enforced mechanically** by
 scanning the real tree). Its `ALLOWED` map is the only escape hatch, and each
 entry pins an exact count, so a second occurrence fails the guard.
 
+## Observe, do not fix
+
+When a test run fails (red test, accessibility violation, baseline or snapshot
+drift, regression): report the finding (file, screen or page, rule, impact,
+useful output) and stop there. Do not fix the application under test, and do
+not fix the test itself either, without an explicit request.
+
+- No convenience baseline update, no `--update-snapshots` to turn a suite green.
+- Healer agents run only on request.
+- When unsure whether to observe or fix: observe, then ask.
+- Exception: a fix that was explicitly asked for, or the development work in
+  progress on this repo, is delivered in full, as usual.
+
 ## Memory (three coexisting layers)
 
 1. **Project memory (this repo, public-safe)**: `memory/` at the repo root,
@@ -151,13 +164,36 @@ python -m pytest tests/unit -q                  # unit tests of the guard script
    `## Écarts constatés à la génération` before re-stamping; every heal
    session appends to `docs/heal-journal.md`.
 
+## This repo is the reference for agentic testing
+
+**Read this before designing or changing any test agent, here or elsewhere.**
+
+This repo is the reference whenever the subject is:
+
+- agentic testing in general;
+- agents plus MCP for Robot Framework;
+- the reasoning mindset of test agents, that is the four agents
+  `rf-planner`, `rf-generator`, `rf-healer` and `rf-istqb`: what each one is
+  for, what it must refuse to do, and how they hand work to one another.
+
+The method is defined here and updated here first. The verticals (SAPFX for
+SAP, rf-ivalua for Ivalua, and any future one) APPLY that method with their
+own capabilities; they do not fork it. A methodology improvement found while
+working on a vertical is back-ported here, then propagated to the others, so
+the four agents keep the same reasoning across every vertical.
+
+Practical consequence for an assistant working in another repo: when a
+question touches the workflow, the ground rules or the division of labour
+between test agents, look here for the answer instead of improvising a local
+one. What belongs to a vertical is its CAPABILITIES, not its method.
+
 ## Relationship to SAPFX
 
 SAP-specific capabilities (SAP GUI perception, UI5 engines, healing telemetry,
-`sapfx-mcp` overlay) stay in SAPFX. Improvements to the *agent methodology*
-(workflow, ground rules, layout) discovered here should be considered for
-back-porting to SAPFX's agents, and vice versa: the two agent sets are kept
-conceptually aligned but have no code dependency.
+`sapfx-mcp` overlay) stay in SAPFX. The agent methodology (workflow, ground
+rules, layout, the four agents' respective mindsets) is owned by this repo,
+per the section above: the two agent sets are kept conceptually aligned but
+have no code dependency.
 
 ## Status / next steps
 
