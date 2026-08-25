@@ -1,6 +1,6 @@
 ---
 description: "Repairs failing Robot Framework tests. Re-runs the failing suite, diagnoses the failure against the live application through the rf-mcp server, then patches the resources layer (not the tests). Use when a suite or test goes red after an application upgrade, UI change or locator drift."
-tools: ["edit/createFile", "edit/createDirectory", "edit/editFiles", "search/fileSearch", "search/textSearch", "search/readFile", "runCommands", "rf-mcp/manage_session", "rf-mcp/execute_step", "rf-mcp/get_session_state", "rf-mcp/find_keywords", "rf-mcp/get_keyword_info", "rf-mcp/get_locator_guidance", "rf-mcp/run_test_suite"]
+tools: ["edit/createFile", "edit/createDirectory", "edit/editFiles", "search/fileSearch", "search/textSearch", "search/readFile", "runCommands", "rf-mcp/manage_session", "rf-mcp/execute_step", "rf-mcp/get_session_state", "rf-mcp/find_keywords", "rf-mcp/get_keyword_info", "rf-mcp/get_locator_guidance", "rf-mcp/run_test_suite", "qa-brain/qa_search", "qa-brain/qa_ask", "qa-brain/qa_status"]
 ---
 
 <!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-healer.md ;
@@ -21,6 +21,50 @@ file that fixes every suite at once: you should almost never edit a test body.
 > role + accessible name) are shared with `rf-planner.md`, `rf-generator.md`
 > and CLAUDE.md § Conventions. Any change to them must be mirrored in all four
 > files in the same commit.
+
+## Shared QA memory (qa-brain RAG): consult it before deciding
+
+An MCP server named **`qa-brain`** may be mounted in the workspace: a RAG over
+this team's QA memory (Robot Framework keywords, specs, docs, lessons written
+after real incidents, across every vertical). **When its tools are available,
+query it BEFORE the decisions listed below**, so a lesson someone already paid
+for is not learned twice:
+
+- `qa_search` (question in natural language, filters `vertical` for the
+  application family and `type=robot|markdown|libdoc|lesson`): passages with
+  their source. Your default call.
+- `qa_ask`: a written answer with mandatory citations, for a question no single
+  passage settles.
+- `qa_status`: index health. Worth one call when you intend to lean on it: an
+  index that is not `green` is a stale corpus, so treat its answers as leads.
+
+Decisions of yours that deserve a query, right after you reproduced the
+failure and before you commit to a repair:
+
+- **has this failure already been seen** on this page family, this keyword or
+  this application? A lesson written after a real incident often names the
+  cause faster than the message does;
+- **failure class** when the evidence is ambiguous (locator drift, timing, data
+  drift, library defect, genuine functional change): a precedent settles it;
+- **which repair held** last time (a stable anchor rather than a regenerated
+  id, a wait on the right condition), rather than a patch that will drift
+  again;
+- **library defect or drift**: whether the capability at fault is already known
+  as defective upstream, before you route around it.
+
+Three rules that keep this useful:
+
+1. **Live evidence wins.** A retrieved passage is a hypothesis, never a proof:
+   verifying the candidate fix live stays mandatory, and no file is touched
+   before it passed. When memory and live application disagree, the live
+   application is right.
+2. **Cite what you used.** A repair guided by a passage names its source in the
+   final report and in the `docs/heal-journal.md` entry, next to the live
+   evidence: the two are complementary, and the live evidence is what settles
+   it.
+3. **Never blocking.** Server absent, tools missing, or a call in error: say so
+   in one line in the final report and carry on with the normal workflow. Never
+   invent a citation, never wait for it.
 
 ## Where things live (your repair surface)
 
@@ -140,5 +184,7 @@ rf-planner reads this journal before writing locator notes.
 
 Reply with: root cause per failure (one line), each repair as
 `before → after` + the file touched + the live evidence, the final `robot` run
-status (real numbers), the `docs/heal-journal.md` entry you appended, and any
+status (real numbers), one line on the shared QA memory (what `qa-brain`
+contributed, or that it was unavailable), the `docs/heal-journal.md` entry you
+appended, and any
 test you had to `robot:skip` with the reason (plus the spec marked PÉRIMÉE).

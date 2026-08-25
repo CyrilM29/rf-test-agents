@@ -78,6 +78,14 @@ The cycle is closed by mechanical guards and explicit feedback loops:
   (« Écarts constatés à la génération ») before re-stamping; every repair is
   logged in `docs/heal-journal.md`, the drift memory the planner reads before
   writing locator notes.
+- **Shared QA memory**: when the optional `qa-brain` MCP server is mounted (a
+  RAG over the team's QA memory: keywords, specs, docs, lessons written after
+  real incidents), the four agents query it (`qa_search`, `qa_ask`,
+  `qa_status`) before their judgement calls: which anchor holds, which layer a
+  keyword belongs to, which class a failure falls into, which risk a test case
+  carries. It never replaces observation: the live application decides, a
+  retrieved passage is a lead that gets cited, and an absent server is one line
+  in the report, never a blocker.
 
 ## Non-negotiable conventions (what the agents enforce)
 
