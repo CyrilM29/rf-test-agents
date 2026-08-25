@@ -82,6 +82,15 @@ explicites :
   avant re-stamp ; chaque réparation est journalisée dans
   `docs/heal-journal.md`, la mémoire des dérives que le planner lit avant
   d'écrire ses notes de localisation.
+- **Mémoire QA partagée** : quand le serveur MCP optionnel `qa-brain` est
+  monté (RAG sur la mémoire QA de l'équipe : keywords, specs, docs, leçons
+  écrites après incident réel), les quatre agents l'interrogent
+  (`qa_search`, `qa_ask`, `qa_status`) avant leurs décisions de jugement :
+  quelle ancre tient, dans quelle couche va un keyword, de quelle classe
+  relève un échec, quel risque porte un cas de test. Cela ne remplace jamais
+  l'observation : l'application live tranche, un passage retrouvé est une
+  piste que l'on cite, et un serveur absent tient en une ligne de rapport
+  sans rien bloquer.
 
 ## Conventions non négociables (ce que les agents font respecter)
 
