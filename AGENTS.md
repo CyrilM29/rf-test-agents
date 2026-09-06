@@ -1,5 +1,19 @@
 # AGENTS.md
 
+## Agent contract v1 (2026-09-06)
+
+Five roles include read-only `rf-verifier` (`/rf-verify`). Read
+`.claude/agent-contract.md` before acting; it supersedes historical healer
+skip/spec-edit/unbounded-replay guidance. Common method is maintained here and
+copied to verticals. Healer outcomes: `repaired_verified`, `application_defect`,
+`blocked`, `needs_human`, `not_verified`; procedural budget 2 / 20 calls / 900s.
+One PreToolUse hook in `.claude/settings.json` serves both hosts: readers retain
+base permissions, others ask (`RF_AGENT_READ_ONLY=1` denies). Qualify loading.
+`agent_contract.py` validates handoff hashes/supplied facts; `agent_journal.py`
+records recovery milestones, never replays. Offline tests do not measure LLM
+quality. Regenerate canonical sources into four legacy chatmodes plus
+`.github/agents/rf-verifier.agent.md`.
+
 Condensed guide for AI coding assistants. **`CLAUDE.md` is the canonical
 guide** (layout, agent definitions, conventions, rf-mcp compatibility notes):
 read it first. Respond to the user in French; keywords/identifiers stay in

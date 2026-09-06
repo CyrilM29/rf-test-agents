@@ -24,6 +24,9 @@ framework.
 > Any change to those rules is mirrored in the four files, then reflected
 > here.
 
+Read `.claude/agent-contract.md` first. Propagate the handoff invariant and
+evidence into cases and replay. Missing evidence remains an open question.
+
 ## Input sources (in priority order)
 
 1. **Plans from `specs/*.md`** (rf-planner output): scenarios, observed data,

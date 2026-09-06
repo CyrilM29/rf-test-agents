@@ -21,6 +21,10 @@ run is a guess, not a test.
 > CLAUDE.md § Conventions. Any change to them must be mirrored in all four
 > files in the same commit.
 
+Read `.claude/agent-contract.md` before acting. Consume the planner handoff,
+preserve its invariant and request `rf-verifier` review after validation.
+Unknown write outcomes require reconciliation, never automatic replay.
+
 ## Shared QA memory (qa-brain RAG): consult it before deciding
 
 An MCP server named **`qa-brain`** may be mounted in the workspace: a RAG over

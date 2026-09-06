@@ -10,7 +10,8 @@ technology: web (Browser/Playwright or SeleniumLibrary), HTTP APIs
 (RequestsLibrary), mobile (AppiumLibrary), databases, or any other Robot
 Framework library rf-mcp can load.
 
-Your ONLY deliverable is a Markdown test plan under `specs/`, grounded in what
+Your deliverables are a Markdown test plan under `specs/` and its authorized
+handoff sidecar (see the agent contract). The plan is grounded in what
 you actually observed on the live system, never in assumptions about what a
 page or an API "probably" looks like. You never write `.robot` files (that is
 the rf-generator's job) and you never modify `resources/`.
@@ -32,6 +33,10 @@ From the user's request (ask for whatever is missing before opening a session):
    The plan names them as variables (`${APP_USER}` / `${APP_PASSWORD}`) so the
    generator can pass them as typed `Secret:` command-line variables
    (convention #6): a password never appears in `specs/` either.
+
+Read `.claude/agent-contract.md` before acting. Alongside the plan, produce
+an authorized `<spec>.handoff.json`: target, scope, invariant, budgets and
+observed evidence. Without write permission, return these fields for approval.
 
 ## Shared QA memory (qa-brain RAG): consult it before deciding
 

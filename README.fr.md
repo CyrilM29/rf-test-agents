@@ -49,14 +49,34 @@ flowchart TB
 
 Les flèches pleines sont le cycle ; les pointillés sont les boucles de
 rétroaction qui gardent le plan honnête : le generator consigne les écarts
-entre le plan et la réalité, le healer marque une spec périmée quand c'est le
+entre le plan et la réalité, le healer propose une nouvelle planification quand c'est le
 flux métier lui-même qui a changé, et chaque réparation atterrit dans le
 journal de guérison que le planner relit à sa passe suivante.
 
-## Les quatre agents
+## Les cinq agents
+
+La méthode actuelle est définie dans [.claude/agent-contract.md](.claude/agent-contract.md)
+(v1, 2026-09-06) : autorisation explicite, passage haché, cinq verdicts du healer,
+budgets procéduraux (2 candidats / 20 appels / 900 secondes), journal de reprise
+prudent et preuves compactes. Aucun saut, assertion affaiblie ou changement de
+baseline pour du vert. La revue indépendante n'est pas un rejeu live. Les cas
+négatifs de `tests/agent_eval/` ont des tests d'oracles hors ligne, pas une mesure
+du comportement des modèles.
+
+Claude Code utilise `/rf-verify` ; Copilot sélectionne `rf-verifier` après
+rechargement, via `.github/agents/rf-verifier.agent.md` généré. Les quatre anciens
+chatmodes restent en place. Un seul hook PreToolUse, dans `.claude/settings.json`,
+sert les deux hôtes : lecteurs soumis aux permissions de base, autres appels
+sur confirmation (`RF_AGENT_READ_ONLY=1` les refuse). Redémarrer et qualifier
+le chargement par une lecture anodine et une édition refusée avant usage sensible.
+Les tests valident le script configuré, pas l'interface de l'hôte. Budgets et
+journal restent procéduraux, sans exécution exactement une fois ni autorisation
+serveur. Journaliser les écritures non idempotentes et réparations de fichiers ;
+un agent sans shell demande un exécutant autorisé, jamais davantage d'outils.
 
 | Agent | Commande | Ce qu'il fait |
 |-------|----------|---------------|
+| **rf-verifier** | `/rf-verify` | Revue indépendante de l'invariant initial, des changements et des preuves de rejeu. Lecture seule, sans édition, shell, exécution ou délégation. |
 | **rf-planner** | `/rf-plan` | Explore l'application vivante via rf-mcp (percevoir → agir → percevoir, snapshots ARIA, vraies réponses API) et écrit un plan de test lisible métier dans `specs/`. Chaque fait du plan a été observé live, jamais supposé. |
 | **rf-generator** | `/rf-generate` | Transforme UN plan `specs/` en suite `.robot` exécutable. Sa discipline fondatrice : **aucune étape n'atterrit dans un fichier avant d'avoir été exécutée live** via rf-mcp. Les keywords métier manquants rejoignent la couche resources (page objects), jamais le corps des tests. |
 | **rf-healer** | `/rf-heal` | Répare une suite en échec en corrigeant la **couche d'automatisation** (`resources/`), jamais en affaiblissant ce que le test prouve. Dérive de localisateur, timing, dérive de données et vrai changement fonctionnel ont chacun leur traitement ; un vrai changement de flux repart chez le planner. |
@@ -75,7 +95,7 @@ explicites :
 - **Conventions** : `python scripts/check_conventions.py` rejette
   mécaniquement les localisateurs bruts dans les corps de test et tout `Sleep`
   (gate du generator, hook post-édition dans `.claude/settings.json`, CI).
-- **Boucles de rétroaction** : le healer marque un plan fonctionnellement
+- **Boucles de rétroaction** : le healer propose au planner de marquer un plan fonctionnellement
   changé `> **Statut : PÉRIMÉE (date)**` (le garde bloque jusqu'à la
   ré-exploration par le planner) ; le generator consigne les écarts
   réalité/plan dans le plan lui-même (« Écarts constatés à la génération »)
