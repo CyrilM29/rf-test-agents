@@ -49,17 +49,40 @@ flowchart TB
 
 Solid arrows are the cycle; dotted arrows are the feedback loops that keep the
 plan honest: the generator records where reality diverged from the plan, the
-healer marks a spec stale when the business flow itself changed, and every
+healer proposes replanning when the business flow itself changed, and every
 repair lands in the heal journal the planner reads next time.
 
-## The four agents
+## The five agents
 
 | Agent | Command | What it does |
 |-------|---------|--------------|
+| **rf-verifier** | `/rf-verify` | Independent read-only review of the original invariant, changes and replay evidence. No editing, shell, test execution or delegation. |
 | **rf-planner** | `/rf-plan` | Explores the live application through rf-mcp (perceive → act → perceive, ARIA snapshots, real API responses) and writes a business-readable test plan under `specs/`. Every fact in the plan was observed live, never assumed. |
 | **rf-generator** | `/rf-generate` | Turns one `specs/` plan into a runnable `.robot` suite. Its defining discipline: **no step lands in a file before it was executed live** through rf-mcp. Missing business keywords are added to the resource layer (page objects), never inlined in tests. |
 | **rf-healer** | `/rf-heal` | Repairs a failing suite by fixing the **automation layer** (`resources/`), never by weakening what the test proves. Locator drift, timing, data drift and genuine functional changes each get their own treatment; genuine flow changes go back to the planner. |
 | **rf-istqb** | `/rf-istqb` | Offline test designer (no rf-mcp session): turns planner specs and recorder outputs (rf-web-recorder exports and drafts) into an **ISTQB test plan + test cases** document under `specs/istqb/` (ISO 29119-3 sections, one test case per scenario, and a normalized framework-neutral `replay` YAML block per case: human-readable AND replayable by an AI with any test framework). What no source supports stays marked « à compléter »; it never edits `tests/robot/` or `resources/`. Ported from the SAPFX `sap-istqb` agent. |
+
+## Mission contract v1 (2026-09-06)
+
+Read [.claude/agent-contract.md](.claude/agent-contract.md): explicit permission,
+hashed handoff, five healer outcomes, procedural budgets (2 candidates / 20
+calls / 900 seconds), conservative recovery journal and compact evidence links.
+No skips, weaker assertions or baseline replacement to obtain green. Independent
+review is not itself a live replay. Negative cases in `tests/agent_eval/` have
+offline oracle tests, not measured model performance.
+
+Claude Code uses `/rf-verify`; Copilot selects `rf-verifier` after reload.
+The verifier uses the generated `.github/agents/rf-verifier.agent.md`; the
+four existing chatmodes remain in place. One PreToolUse hook in
+`.claude/settings.json` serves both hosts. Readers preserve base permissions;
+other calls require confirmation (`RF_AGENT_READ_ONLY=1` denies). Restart and
+qualify host loading with a harmless read and denied edit before sensitive use.
+Tests validate the configured script, not the host UI. Budgets and journal
+operation remain procedural; this is not an exactly-once runner or a server
+authorization service. Journal only non-idempotent writes/repair mutations;
+agents without shell request an authorized executing owner, never broader tools.
+
+## Batch generation
 
 `/rf-generate-all` chains the generator over every eligible spec (sequentially
 shared page objects and one live session don't parallelize).

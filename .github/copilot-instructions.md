@@ -1,5 +1,19 @@
 # GitHub Copilot instructions
 
+## Agent contract v1 (2026-09-06)
+
+Five roles include read-only `rf-verifier` (`/rf-verify` in Claude Code).
+Read `.claude/agent-contract.md` first; it supersedes healer skips, spec edits
+and unbounded replay. Maintain common method here, then copy to verticals.
+Outcomes: `repaired_verified`, `application_defect`, `blocked`, `needs_human`,
+`not_verified`; procedural budget 2 candidates / 20 calls / 900s. One PreToolUse
+hook in `.claude/settings.json` serves both hosts: readers retain base
+permissions, others ask (`RF_AGENT_READ_ONLY=1` denies). Qualify host loading.
+`agent_contract.py` validates hashes/supplied facts; `agent_journal.py` records
+recovery milestones, never replays. Offline tests are not LLM performance.
+Regenerate canonical agents into four chatmodes plus
+`.github/agents/rf-verifier.agent.md`.
+
 **`CLAUDE.md` at the repo root is the canonical guide** for this project
 (universal Robot Framework test agents: plan → generate → heal over rf-mcp, plus the offline rf-istqb ISTQB designer):
 read and apply it whatever assistant is in use. Respond to the user in French.

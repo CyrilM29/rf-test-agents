@@ -1,5 +1,21 @@
 # CLAUDE.md
 
+## Agent contract v1 (2026-09-06)
+
+Five roles include independent read-only `rf-verifier` (`/rf-verify`). The
+method in `.claude/agent-contract.md` is authoritative over historical advice
+about healer skips, spec edits or unbounded replay. Verticals copy the common
+scripts/contract without a runtime dependency and add their own domain checks.
+Healer outcomes: `repaired_verified`, `application_defect`, `blocked`,
+`needs_human`, `not_verified`; procedural budget 2 candidates / 20 calls / 900s.
+One PreToolUse hook in `.claude/settings.json` serves Claude Code and Copilot:
+readers retain host permissions, all other calls ask (`RF_AGENT_READ_ONLY=1`
+denies). Qualify host loading before trusting enforcement. `agent_contract.py`
+checks handoff hashes and supplied verdict facts; `agent_journal.py` records
+recovery milestones, never automatically replays. Offline component tests and
+the negative case catalogue are not measured LLM performance. Regenerate the
+canonical agents into four legacy chatmodes and `.github/agents/rf-verifier.agent.md`.
+
 Guidance for AI assistants working in this repo. Keep it accurate: update it
 when structure or conventions change.
 
