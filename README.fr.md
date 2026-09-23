@@ -112,6 +112,35 @@ explicites :
   piste que l'on cite, et un serveur absent tient en une ligne de rapport
   sans rien bloquer.
 
+## Spec-Test-Driven Development (STDD)
+
+Le cycle ci-dessus sert un seul état d'esprit, le **Spec-Test-Driven
+Development**, partagé par toutes les verticales bâties sur ces agents (SAPFX
+pour SAP, ODOOFX pour Odoo) :
+
+1. **La spec d'abord, en langage humain.** La spec est une vision
+   d'ensemble, large, exprimée en langage humain sous forme d'instructions,
+   structurées ou non : un objectif métier, une user story, un scénario BDD,
+   un cas de test ou une suite existante. Le planner la confronte au système
+   réel et en écrit la version observée dans `specs/`, jamais depuis une
+   hypothèse ; c'est cette version qui fait foi, relue par un humain, avec un
+   statut de cycle de vie.
+2. **Le test dérive de la spec.** La suite est générée depuis le plan, chaque
+   étape exécutée en direct avant d'être écrite, et scellée par le sha256 du
+   plan : un plan modifié sans régénération fait échouer le garde. Personne ne
+   retouche une suite générée à la main pour la rattraper ; on régénère.
+3. **Le développement dérive du test.** Ce que le test exige et qu'aucun
+   keyword ne sait encore faire s'ajoute dans la bonne couche (`resources/`
+   ici, la bibliothèque dans une verticale), jamais en contournement inline.
+   Le healer répare `resources/`, jamais le test ; un flux métier qui change
+   remonte à la spec.
+
+Ce qui distingue le STDD : la spec s'écrit en langage humain, jamais en
+code, et sous n'importe quelle forme (le BDD en est une, un fichier de test
+standard en est une autre) ; la version qui fait foi est observée sur le
+système vivant, pas supposée, et gardée mécaniquement ; et elle pilote aussi
+le code d'automatisation, pas seulement les tests.
+
 ## Conventions non négociables (ce que les agents font respecter)
 
 1. **Les tests ne contiennent aucun localisateur brut.** CSS/XPath/ids vivent

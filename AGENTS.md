@@ -36,6 +36,18 @@ back-ported here, then propagated. Working elsewhere and unsure about an
 agent's workflow, ground rules or division of labour: look here rather than
 improvise locally. A vertical owns its capabilities, not the method.
 
+## Spec-Test-Driven Development (STDD)
+
+The mindset every vertical shares (named 2026-09-23, detailed in `CLAUDE.md`):
+the spec comes first, a broad vision written in human language, structured
+or not (business goal, user story, BDD scenario, standard test file); the
+planner confronts it with the live system and writes its observed version
+under `specs/`, the source of truth; the test is derived from the spec (every step executed live, sha256
+provenance guarded, a generated suite is regenerated, never hand-edited); the
+development is derived from the test (a missing capability becomes a keyword
+in the right layer, never a workaround in a test; the healer repairs
+`resources/`, a changed flow goes back to the spec).
+
 ## Observe, do not fix
 
 When a test run fails (red test, accessibility violation, baseline or snapshot

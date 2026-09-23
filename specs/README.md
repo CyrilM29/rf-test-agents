@@ -5,6 +5,13 @@ l'agent **rf-planner** (exploration live via rf-mcp), consommé par l'agent
 **rf-generator** (génération de la suite `.robot`, chaque étape exécutée live
 avant écriture).
 
+Ce répertoire porte la version observée de la spec du **Spec-Test-Driven
+Development** (STDD, voir `README.fr.md`). La spec elle-même est une vision
+d'ensemble en langage humain, structurée ou non (objectif métier, user story,
+scénario BDD, fichier de test existant), qui lance le planner ; sa version
+observée, écrite ici, pilote le test, et le test pilote le développement de
+la couche d'automatisation.
+
 Règles :
 
 - Le plan est la **source de vérité** : la suite générée porte un marqueur de
