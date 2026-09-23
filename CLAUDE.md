@@ -203,6 +203,42 @@ question touches the workflow, the ground rules or the division of labour
 between test agents, look here for the answer instead of improvising a local
 one. What belongs to a vertical is its CAPABILITIES, not its method.
 
+## Spec-Test-Driven Development (STDD): the mindset
+
+The five agents, the guards and the layout above serve one mindset, named
+**Spec-Test-Driven Development** (STDD) on 2026-09-23 and shared by every
+vertical built on these agents (SAPFX for SAP, ODOOFX for Odoo, rf-ivalua for
+Ivalua). Three links in a chain, each one driving the next:
+
+1. **Spec first, in human language.** In STDD the spec is a broad, overall
+   vision expressed as instructions in human language, structured or not: a
+   business goal in a few sentences, a user story, a BDD scenario (Gherkin),
+   an ISTQB test case, an existing suite to take over. It is what launches
+   the planner, which confronts it with the live system (perceive → act →
+   perceive) and writes its observed version under `specs/`, never from an
+   assumption: dated, reviewed by a human, carrying a lifecycle status
+   (current, `PÉRIMÉE`, blocked). That observed version is the source of
+   truth for the rest of the chain.
+2. **Test derived from the spec.** The generator produces the suite from the
+   plan, every step executed live before it is written; the suite embeds the
+   sha256 of its plan and `check_spec_sync.py` fails when a plan changed
+   without regeneration. A generated suite is never hand-edited to catch up
+   with its plan: it is regenerated (convention #5).
+3. **Development derived from the test.** What the test needs and no keyword
+   provides yet is added to the right layer (`resources/` here, the library
+   `src/` in a vertical), never inlined as a workaround in a test. The healer
+   repairs `resources/`, never the test; a changed business flow goes back to
+   the spec (`PÉRIMÉE` marker) and through exploration again (convention #9).
+
+What sets STDD apart: the spec is written in human language, never in code,
+and in any form (BDD is one of them, a standard test file is another); the
+version that counts is observed on the real system, not assumed, and
+mechanically guarded; and it drives the automation code as well, not only the
+tests. Never present STDD as opposed to BDD. The feedback loops (« Écarts
+constatés à la génération », heal journal, independent verifier review, ISTQB
+documents) are what keep the chain honest. The notion is described publicly on the AI
+Cabra website (method section on the home page, FAQ and glossary entries).
+
 ## Relationship to SAPFX
 
 SAP-specific capabilities (SAP GUI perception, UI5 engines, healing telemetry,

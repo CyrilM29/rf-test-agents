@@ -110,6 +110,32 @@ The cycle is closed by mechanical guards and explicit feedback loops:
   retrieved passage is a lead that gets cited, and an absent server is one line
   in the report, never a blocker.
 
+## Spec-Test-Driven Development (STDD)
+
+The cycle above serves one mindset, **Spec-Test-Driven Development**, shared
+by every vertical built on these agents (SAPFX for SAP, ODOOFX for Odoo):
+
+1. **Spec first, in human language.** The spec is a broad, overall vision
+   expressed as instructions in human language, structured or not: a
+   business goal, a user story, a BDD scenario, an existing test case or
+   suite. The planner confronts it with the real system and writes its
+   observed version under `specs/`, never from an assumption; that version
+   is the source of truth, reviewed by a human, with a lifecycle status.
+2. **Test derived from the spec.** The suite is generated from the plan, every
+   step executed live before it is written, and sealed with the plan's sha256:
+   a plan changed without regeneration fails the guard. Nobody hand-edits a
+   generated suite to catch up with its plan; it is regenerated.
+3. **Development derived from the test.** What the test needs and no keyword
+   provides yet is added to the right layer (`resources/` here, the library in
+   a vertical), never inlined as a workaround. The healer repairs `resources/`,
+   never the test; a changed business flow goes back to the spec.
+
+What sets STDD apart: the spec is written in human language, never in code,
+and in any form (BDD is one of them, a standard test file is another); the
+version that counts is observed on the live system, not assumed, and
+mechanically guarded; and it drives the automation code as well, not only
+the tests.
+
 ## Non-negotiable conventions (what the agents enforce)
 
 1. **Tests contain no raw locators.** CSS/XPath/element ids live in
