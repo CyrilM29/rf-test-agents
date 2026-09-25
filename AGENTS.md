@@ -46,7 +46,10 @@ under `specs/`, the source of truth; the test is derived from the spec (every st
 provenance guarded, a generated suite is regenerated, never hand-edited); the
 development is derived from the test (a missing capability becomes a keyword
 in the right layer, never a workaround in a test; the healer repairs
-`resources/`, a changed flow goes back to the spec).
+`resources/`, a changed flow goes back to the spec). Read against TDD: the
+same logic one brick earlier; the spec is green by default in theory (nobody
+runs it), so STDD confronts it with the real system first: red where refuted,
+green once observed, and only then the test and the code.
 
 ## Observe, do not fix
 

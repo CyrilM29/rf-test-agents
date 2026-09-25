@@ -135,6 +135,14 @@ pour SAP, ODOOFX pour Odoo) :
    Le healer répare `resources/`, jamais le test ; un flux métier qui change
    remonte à la spec.
 
+**Lu à l'aune de TDD.** Le STDD garde la logique de TDD et la déplace d'une
+brique. TDD, c'est rouge, vert, refactor : le test d'abord, il échoue, puis le
+code le fait passer. En STDD, la première brique est la spec, et une spec est
+*verte par défaut, en théorie* : on l'écrit, on la croit, personne ne
+l'exécute, donc rien ne peut la faire échouer. Le STDD la met à l'épreuve du
+système réel : rouge là où le système la réfute, verte une fois observée, et
+seulement ensuite viennent le test et le code.
+
 Ce qui distingue le STDD : la spec s'écrit en langage humain, jamais en
 code, et sous n'importe quelle forme (le BDD en est une, un fichier de test
 standard en est une autre) ; la version qui fait foi est observée sur le

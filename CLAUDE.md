@@ -230,6 +230,17 @@ Ivalua). Three links in a chain, each one driving the next:
    repairs `resources/`, never the test; a changed business flow goes back to
    the spec (`PÉRIMÉE` marker) and through exploration again (convention #9).
 
+**Read against TDD (framing of 2026-09-25, from the user).** STDD keeps the
+logic of TDD and moves it one brick earlier. TDD is red, green, refactor: the
+test comes first, it fails, then the code makes it pass. In STDD the first
+brick is the spec, and a spec is *green by default, in theory*: it is written,
+believed and never run, so nothing can make it fail. STDD puts that brick to
+the test on the real system: the planner's confrontation is its red phase
+(the assumptions the system refutes), the observed spec is its green phase,
+and only then come the test and the code. A spec nobody has confronted is
+green the way an unrun test is green: by default, not by proof. Say it as
+« the same logic, one brick earlier », never as STDD against TDD.
+
 What sets STDD apart: the spec is written in human language, never in code,
 and in any form (BDD is one of them, a standard test file is another); the
 version that counts is observed on the real system, not assumed, and

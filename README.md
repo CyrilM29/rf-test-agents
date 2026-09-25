@@ -130,6 +130,14 @@ by every vertical built on these agents (SAPFX for SAP, ODOOFX for Odoo):
    a vertical), never inlined as a workaround. The healer repairs `resources/`,
    never the test; a changed business flow goes back to the spec.
 
+**Read against TDD.** STDD keeps the logic of TDD and moves it one brick
+earlier. TDD is red, green, refactor: the test comes first, it fails, then the
+code makes it pass. In STDD the first brick is the spec, and a spec is *green
+by default, in theory*: it is written, believed and never run, so nothing can
+make it fail. STDD puts it to the test on the real system: red where the
+system refutes it, green once observed, and only then come the test and the
+code.
+
 What sets STDD apart: the spec is written in human language, never in code,
 and in any form (BDD is one of them, a standard test file is another); the
 version that counts is observed on the live system, not assumed, and
