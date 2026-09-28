@@ -21,5 +21,9 @@ output.xml
 *.secret
 .env
 
+# Local permission-hook policy chosen by the workstation owner
+# (scripts/agent_policy.py on|off), never committed.
+.claude/*.local.json
+
 # Communication base: kept local, not published with the repo
 comms/

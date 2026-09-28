@@ -77,6 +77,12 @@ four existing chatmodes remain in place. One PreToolUse hook in
 `.claude/settings.json` serves both hosts. Readers preserve base permissions;
 other calls require confirmation (`RF_AGENT_READ_ONLY=1` denies). Restart and
 qualify host loading with a harmless read and denied edit before sensitive use.
+On a development workstation the owner may switch a local `autonomous` policy
+with `/autonomie on|off` (Claude Code or Copilot Chat) or
+`python scripts/agent_policy.py on|off|status` (file
+`.claude/agent-policy.local.json`, git-ignored): routine calls keep base host
+permissions and only important phases ask (commit, push, tag, deletion,
+installs, publication, unknown tools).
 Tests validate the configured script, not the host UI. Budgets and journal
 operation remain procedural; this is not an exactly-once runner or a server
 authorization service. Journal only non-idempotent writes/repair mutations;
