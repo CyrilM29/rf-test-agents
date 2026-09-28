@@ -16,6 +16,17 @@ The PreToolUse hook `scripts/hook_agent_permissions.py` preserves base host
 permissions for known readers and asks for confirmation for every other call:
 shell, edits, delegation, MCP execution, batches and unknown tools.
 `RF_AGENT_READ_ONLY=1` in the HOST environment denies those calls instead.
+The workstation owner may choose the `autonomous` policy (`RF_AGENT_POLICY`
+in the host environment, else `.claude/agent-policy.local.json`, ignored by
+git): known local families (edits, ordinary shell, rf-mcp, delegation) then
+keep base host permissions, and only important phases still ask (commit,
+push, tag, history rewrite, deletion, installs, publication, unknown or
+outward tools). It is the owner's standing choice, never an agent's: an
+agent writes that file (`scripts/agent_policy.py on|off|status`, or the
+owner's `/autonomie` command) only on the owner's explicit request, never to
+get past a confirmation. Unreadable values fall back to confirmation. The
+policy never authorizes a business write: rf-mcp can drive one, and the
+handoff mode and the journal still govern it.
 The verifier has a separate read-only tool allowlist. Neither gate parses
 shell programs or infers keyword effects. Confirmation of a suite is not
 proof that every nested action is authorized: inspect its scope first.

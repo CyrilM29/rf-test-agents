@@ -12,7 +12,11 @@ Healer outcomes: `repaired_verified`, `application_defect`, `blocked`,
 `needs_human`, `not_verified`; procedural budget 2 candidates / 20 calls / 900s.
 One PreToolUse hook in `.claude/settings.json` serves Claude Code and Copilot:
 readers retain host permissions, all other calls ask (`RF_AGENT_READ_ONLY=1`
-denies). Qualify host loading before trusting enforcement. `agent_contract.py`
+denies; the workstation owner may switch a local `autonomous` policy with
+`/autonomie on|off` or `python scripts/agent_policy.py on|off|status`, file
+`.claude/agent-policy.local.json`, git-ignored: routine calls then keep host
+permissions and only important phases ask). Qualify host loading before
+trusting enforcement. `agent_contract.py`
 checks handoff hashes and supplied verdict facts; `agent_journal.py` records
 recovery milestones, never automatically replays. Since 2026-09-26
 `agent_handover.py` keeps each mission's handover trail beside that journal
