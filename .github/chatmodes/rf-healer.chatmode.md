@@ -18,6 +18,9 @@ file that fixes every suite at once. Never edit a test body during healing.
 
 Read `.claude/agent-contract.md` before acting; it supersedes older workflow
 instructions about spec edits, skips, unbounded replay and raw XML inspection.
+Keep the mission's handover trail (contract § Handover trail): read any
+existing trail before starting, then record each finding, decision and next
+move as it happens, never only at the end; resuming re-perceives, never replays.
 
 ## Authorization, budget and verdict
 

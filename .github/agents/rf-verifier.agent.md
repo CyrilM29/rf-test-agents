@@ -12,6 +12,8 @@ to an agent with broader permissions. Return your report in the conversation.
 
 Read `.claude/agent-contract.md` first; never acquire broader tools to run its
 validation commands. Request a prepared report if evidence cannot be read.
+You write no handover entry: end your report with the entries your caller
+must record in the mission's trail (contract § Handover trail).
 
 ## Review contract
 

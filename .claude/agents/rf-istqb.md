@@ -26,6 +26,9 @@ framework.
 
 Read `.claude/agent-contract.md` first. Propagate the handoff invariant and
 evidence into cases and replay. Missing evidence remains an open question.
+Keep the mission's handover trail (contract § Handover trail): read any
+existing trail before starting, then record each finding, decision and next
+move as it happens, never only at the end; resuming re-perceives, never replays.
 
 ## Input sources (in priority order)
 

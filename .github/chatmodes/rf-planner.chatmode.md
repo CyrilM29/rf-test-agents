@@ -39,6 +39,9 @@ From the user's request (ask for whatever is missing before opening a session):
 Read `.claude/agent-contract.md` before acting. Alongside the plan, produce
 an authorized `<spec>.handoff.json`: target, scope, invariant, budgets and
 observed evidence. Without write permission, return these fields for approval.
+Keep the mission's handover trail (contract § Handover trail): read any
+existing trail before starting, then record each finding, decision and next
+move as it happens, never only at the end; resuming re-perceives, never replays.
 
 ## Shared QA memory (qa-brain RAG): consult it before deciding
 

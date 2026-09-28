@@ -26,6 +26,9 @@ run is a guess, not a test.
 Read `.claude/agent-contract.md` before acting. Consume the planner handoff,
 preserve its invariant and request `rf-verifier` review after validation.
 Unknown write outcomes require reconciliation, never automatic replay.
+Keep the mission's handover trail (contract § Handover trail): read any
+existing trail before starting, then record each finding, decision and next
+move as it happens, never only at the end; resuming re-perceives, never replays.
 
 ## Shared QA memory (qa-brain RAG): consult it before deciding
 

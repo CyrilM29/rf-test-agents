@@ -1,5 +1,7 @@
 # AGENTS.md
 
+Default to concise responses: lead with the conclusion, dense bullet points, no preamble or filler, except for critical security, ambiguity needing clarification, or learning contexts.
+
 ## Agent contract v1 (2026-09-06)
 
 Five roles include read-only `rf-verifier` (`/rf-verify`). Read
@@ -10,7 +12,11 @@ copied to verticals. Healer outcomes: `repaired_verified`, `application_defect`,
 One PreToolUse hook in `.claude/settings.json` serves both hosts: readers retain
 base permissions, others ask (`RF_AGENT_READ_ONLY=1` denies). Qualify loading.
 `agent_contract.py` validates handoff hashes/supplied facts; `agent_journal.py`
-records recovery milestones, never replays. Offline tests do not measure LLM
+records recovery milestones, never replays. `agent_handover.py` keeps each
+mission's handover trail (`results/agent_runs/<mission>/handover/NNNN.json`,
+one immutable entry per file, Write alone suffices): record as you go, resume
+with `resume` (journal verdicts merged; re-open sessions, prove the target,
+re-perceive, never replay). Offline tests do not measure LLM
 quality. Regenerate canonical sources into four legacy chatmodes plus
 `.github/agents/rf-verifier.agent.md`.
 

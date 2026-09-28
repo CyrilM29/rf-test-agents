@@ -1,5 +1,7 @@
 # GitHub Copilot instructions
 
+Default to concise responses: lead with the conclusion, dense bullet points, no preamble or filler, except for critical security, ambiguity needing clarification, or learning contexts.
+
 ## Agent contract v1 (2026-09-06)
 
 Five roles include read-only `rf-verifier` (`/rf-verify` in Claude Code).
@@ -10,7 +12,11 @@ Outcomes: `repaired_verified`, `application_defect`, `blocked`, `needs_human`,
 hook in `.claude/settings.json` serves both hosts: readers retain base
 permissions, others ask (`RF_AGENT_READ_ONLY=1` denies). Qualify host loading.
 `agent_contract.py` validates hashes/supplied facts; `agent_journal.py` records
-recovery milestones, never replays. Offline tests are not LLM performance.
+recovery milestones, never replays. `agent_handover.py` keeps each mission's
+handover trail (`results/agent_runs/<mission>/handover/NNNN.json`, one
+immutable entry per file): record as you go, `resume` first after an
+interruption (re-open sessions, prove the target, re-perceive, never replay).
+Offline tests are not LLM performance.
 Regenerate canonical agents into four chatmodes plus
 `.github/agents/rf-verifier.agent.md`.
 

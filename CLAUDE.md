@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+Default to concise responses: lead with the conclusion, dense bullet points, no preamble or filler, except for critical security, ambiguity needing clarification, or learning contexts.
+
 ## Agent contract v1 (2026-09-06)
 
 Five roles include independent read-only `rf-verifier` (`/rf-verify`). The
@@ -12,7 +14,13 @@ One PreToolUse hook in `.claude/settings.json` serves Claude Code and Copilot:
 readers retain host permissions, all other calls ask (`RF_AGENT_READ_ONLY=1`
 denies). Qualify host loading before trusting enforcement. `agent_contract.py`
 checks handoff hashes and supplied verdict facts; `agent_journal.py` records
-recovery milestones, never automatically replays. Offline component tests and
+recovery milestones, never automatically replays. Since 2026-09-26
+`agent_handover.py` keeps each mission's handover trail beside that journal
+(one immutable `results/agent_runs/<mission>/handover/NNNN.json` per entry,
+writable with Write alone), so another agent of the family can resume after a
+restart, timeout or crash: `resume` merges the journal verdicts and resuming
+still means new sessions, target proof and re-perception, never replay
+(contract § Handover trail). Offline component tests and
 the negative case catalogue are not measured LLM performance. Regenerate the
 canonical agents into four legacy chatmodes and `.github/agents/rf-verifier.agent.md`.
 
@@ -117,6 +125,7 @@ python scripts/check_conventions.py             # conventions #1/#2 guard (raw l
 python scripts/check_guidance_sync.py           # conventions still carried by the agent definitions (#8)
 python scripts/regen_agent_definitions.py       # (re)write the VS Code chat modes; --check in CI
 python -m pytest tests/unit -q                  # unit tests of the guard scripts
+python scripts/agent_handover.py resume <mission>   # read an interrupted mission's trail (0 resume, 1 nothing, 2 stop, 3 reconcile)
 ```
 
 ## rf-mcp compatibility notes
@@ -296,3 +305,15 @@ have no code dependency.
       declares rf-mcp in VS Code's format (server key `rf-mcp`, matching the
       `rf-mcp/<tool>` references in the generated chat modes); Copilot setup
       documented in both READMEs' Quickstart.
+- [x] **Handover trail (2026-09-26)**: the family rule « agents record their
+      findings and progress as they go so another agent can resume » is
+      implemented here first as an extension of the contract's Recovery
+      section, not beside it. `scripts/agent_handover.py`: one immutable JSON
+      file per entry (an agent without a shell writes the next number with
+      Write; nothing ever rewrites a past entry), a secret screen, a strict
+      sequence (gap, tampering, stray file, leftover lock: stop), agreement
+      with the handoff sidecar, and a `resume` that merges the journal
+      verdicts, so a `sent` write still forces read-only reconciliation.
+      49 unit tests, counter-proof played (neutering the screen and the exit
+      code fails 9 of them); two negative eval cases. Propagated to SAPFX,
+      RF_GenAI, ODOOFX and Playwright_GenAI the same day.
