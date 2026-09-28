@@ -16,6 +16,10 @@ La politique se choisit par ``RF_AGENT_POLICY`` dans l'environnement de
 l'hote, a defaut par le fichier local ``.claude/agent-policy.local.json``
 (``{"policy": "autonomous"}``), ignore par git. Une valeur illisible retombe
 sur ``confirm`` : le repli est la confirmation, jamais l'autonomie.
+
+Seul un humain change les regles d'approbation : toucher le fichier de
+politique, les reglages des hotes ou les deux scripts qui les appliquent, ou
+invoquer ``/autonomie``, demande confirmation sous TOUTE politique.
 """
 from __future__ import annotations
 
@@ -77,6 +81,21 @@ IMPORTANT_COMMAND = re.compile(
     re.IGNORECASE | re.VERBOSE,
 )
 
+# Regles d'approbation : ce qu'un agent ne change jamais de lui-meme, quelle
+# que soit la politique (le contrat interdit de les changer pour passer un
+# refus). Chemins relatifs au depot, compares en fin de chemin.
+APPROVAL_FILES = (
+    ".claude/agent-policy.local.json", ".claude/settings.json",
+    ".claude/settings.local.json", "scripts/hook_agent_permissions.py",
+    "scripts/agent_policy.py",
+)
+APPROVAL_COMMAND = re.compile(
+    r"agent_policy\.py\s+(?:on|off)\b | agent-policy\.local\.json"
+    r" | hook_agent_permissions\.py | \.claude[\\/]+settings(?:\.local)?\.json",
+    re.IGNORECASE | re.VERBOSE,
+)
+PATCH_TARGET = re.compile(r"^\*\*\* (?:Add|Update|Delete) File: (.+)$", re.MULTILINE)
+
 
 def decision(payload: object, *, read_only: bool = False, policy: str = "confirm") -> dict:
     """Ne jamais emettre allow : conserver les permissions de base de l'hote."""
@@ -95,6 +114,12 @@ def decision(payload: object, *, read_only: bool = False, policy: str = "confirm
         return {}
     if read_only:
         return response("deny", "Read-only policy: execution, edits and unknown tools are denied.")
+    if touches_approval_rules(tool, arguments):
+        return response(
+            "ask",
+            "Approval rules (local policy, host settings, permission hook) change only by a "
+            "human: confirm this exact change yourself, never to get past a refusal.",
+        )
     if policy == "autonomous" and autonomous_passes(tool, arguments):
         return {}
     return response(
@@ -111,6 +136,26 @@ def autonomous_passes(tool: str, arguments: dict) -> bool:
         return isinstance(command, str) and not IMPORTANT_COMMAND.search(command)
     return (tool in EDIT_TOOLS or tool in DELEGATION_TOOLS or tool in HARNESS_TOOLS
             or tool.startswith(AUTONOMOUS_MCP_PREFIXES))
+
+
+def touches_approval_rules(tool: str, arguments: dict) -> bool:
+    """Vrai si l'appel change une regle d'approbation, dans les deux dialectes."""
+    if tool in SHELL_TOOLS:
+        command = arguments.get("command")
+        return isinstance(command, str) and bool(APPROVAL_COMMAND.search(command))
+    if tool in {"Skill", "SlashCommand"}:
+        name = arguments.get("skill") or arguments.get("command") or ""
+        return isinstance(name, str) and "autonomie" in name.lower()
+    targets = [arguments.get(key) for key in ("file_path", "filePath", "path", "notebook_path")]
+    patch = arguments.get("input")
+    if isinstance(patch, str):
+        targets.extend(PATCH_TARGET.findall(patch))
+    for target in targets:
+        if isinstance(target, str):
+            normalized = "/" + target.strip().replace("\\", "/").lower()
+            if normalized.endswith(tuple("/" + name for name in APPROVAL_FILES)):
+                return True
+    return False
 
 
 def load_policy(environ: Mapping[str, str] | None = None, policy_file: Path = POLICY_FILE) -> str:

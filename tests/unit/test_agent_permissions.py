@@ -102,6 +102,41 @@ def test_autonomous_policy_never_covers_unknown_or_outward_tools(tool):
     assert verdict(tool, {"command": "anything"}, policy="autonomous") == "ask"
 
 
+@pytest.mark.parametrize("tool, arguments", [
+    ("Bash", {"command": "python scripts/agent_policy.py on"}),
+    ("PowerShell", {"command": "python scripts\\agent_policy.py off"}),
+    ("run_in_terminal", {"command": "Set-Content .claude/agent-policy.local.json '{}'"}),
+    ("Bash", {"command": "echo '{}' > .claude/settings.local.json"}),
+    ("PowerShell", {"command": "python scripts/hook_agent_permissions.py < payload.json"}),
+    ("Write", {"file_path": "E:\\repo\\.claude\\agent-policy.local.json"}),
+    ("Edit", {"file_path": "/repo/.claude/settings.json"}),
+    ("replace_string_in_file", {"filePath": "C:/repo/scripts/hook_agent_permissions.py"}),
+    ("create_file", {"filePath": "/repo/.claude/settings.local.json"}),
+    ("edit/editFiles", {"filePath": "/repo/scripts/agent_policy.py"}),
+    ("apply_patch", {"input": "*** Begin Patch\n*** Update File: /repo/.claude/settings.json\n"
+                              "@@\n-a\n+b\n*** End Patch"}),
+    ("Skill", {"skill": "autonomie", "args": "on"}),
+    ("SlashCommand", {"command": "/autonomie off"}),
+])
+def test_only_a_human_changes_the_approval_rules(tool, arguments):
+    assert verdict(tool, arguments, policy="autonomous") == "ask"
+    assert verdict(tool, arguments) == "ask"
+    assert verdict(tool, arguments, read_only=True) == "deny"
+
+
+@pytest.mark.parametrize("tool, arguments", [
+    ("Bash", {"command": "python scripts/agent_policy.py status"}),
+    ("Bash", {"command": "python scripts/agent_policy.py"}),
+    ("Bash", {"command": "python -m pytest tests/unit/test_agent_permissions.py"}),
+    ("Edit", {"file_path": "/repo/CLAUDE.md", "old_string": ".claude/settings.json",
+              "new_string": "the host settings"}),
+    ("Write", {"file_path": "/repo/docs/settings.json"}),
+    ("Skill", {"skill": "reponse-concise"}),
+])
+def test_approval_lock_leaves_routine_work_to_the_policy(tool, arguments):
+    assert verdict(tool, arguments, policy="autonomous") is None
+
+
 def test_autonomous_shell_without_command_string_is_confirmed():
     assert verdict("Bash", {"command": ["git", "push"]}, policy="autonomous") == "ask"
 

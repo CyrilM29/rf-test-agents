@@ -15,7 +15,10 @@ readers retain host permissions, all other calls ask (`RF_AGENT_READ_ONLY=1`
 denies; the workstation owner may switch a local `autonomous` policy with
 `/autonomie on|off` or `python scripts/agent_policy.py on|off|status`, file
 `.claude/agent-policy.local.json`, git-ignored: routine calls then keep host
-permissions and only important phases ask). Qualify host loading before
+permissions and only important phases ask; only a human switches it:
+`/autonomie` is not model-invocable, and any change to an approval rule, the
+policy file, host settings, hook or policy script, asks under every policy).
+Qualify host loading before
 trusting enforcement. `agent_contract.py`
 checks handoff hashes and supplied verdict facts; `agent_journal.py` records
 recovery milestones, never automatically replays. Since 2026-09-26

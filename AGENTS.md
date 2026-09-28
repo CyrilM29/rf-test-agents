@@ -11,7 +11,8 @@ copied to verticals. Healer outcomes: `repaired_verified`, `application_defect`,
 `blocked`, `needs_human`, `not_verified`; procedural budget 2 / 20 calls / 900s.
 One PreToolUse hook in `.claude/settings.json` serves both hosts: readers retain
 base permissions, others ask (`RF_AGENT_READ_ONLY=1` denies; owner's local
-`autonomous` policy via `/autonomie on|off`: only important phases ask).
+`autonomous` policy via `/autonomie on|off`: only important phases ask; only a
+human switches it, and changing an approval rule asks under every policy).
 Qualify loading.
 `agent_contract.py` validates handoff hashes/supplied facts; `agent_journal.py`
 records recovery milestones, never replays. `agent_handover.py` keeps each

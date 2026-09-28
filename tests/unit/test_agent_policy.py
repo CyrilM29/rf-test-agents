@@ -50,6 +50,14 @@ def test_explicit_confirm_file_is_not_reported_as_unreadable(tmp_path):
     assert "illisible" not in outil.etat({}, fichier)
 
 
+def test_only_a_human_can_invoke_the_switch():
+    """Claude Code propose aussi les commandes au modèle, comme des skills :
+    sans ce champ, un agent pourrait basculer la politique de lui-même."""
+    commande = (ROOT / ".claude" / "commands" / "autonomie.md").read_text(encoding="utf-8")
+    entete = commande.replace("\r\n", "\n").split("\n---\n", 1)[0]
+    assert "\ndisable-model-invocation: true" in entete
+
+
 def test_cli_status_runs_from_a_foreign_working_directory(tmp_path):
     result = subprocess.run([sys.executable, str(SCRIPT), "status"], cwd=tmp_path,
                             capture_output=True, text=True, encoding="utf-8", check=False)

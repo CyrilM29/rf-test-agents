@@ -24,7 +24,11 @@ push, tag, history rewrite, deletion, installs, publication, unknown or
 outward tools). It is the owner's standing choice, never an agent's: an
 agent writes that file (`scripts/agent_policy.py on|off|status`, or the
 owner's `/autonomie` command) only on the owner's explicit request, never to
-get past a confirmation. Unreadable values fall back to confirmation. The
+get past a confirmation. The hook makes that rule mechanical: touching an
+approval rule (the policy file, `agent_policy.py on|off`, the host
+`.claude/settings*.json`, the hook or policy script) asks under every policy,
+and `/autonomie` carries `disable-model-invocation: true`, so only a human
+types it. Unreadable values fall back to confirmation. The
 policy never authorizes a business write: rf-mcp can drive one, and the
 handoff mode and the journal still govern it.
 The verifier has a separate read-only tool allowlist. Neither gate parses

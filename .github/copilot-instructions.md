@@ -12,7 +12,8 @@ Outcomes: `repaired_verified`, `application_defect`, `blocked`, `needs_human`,
 hook in `.claude/settings.json` serves both hosts: readers retain base
 permissions, others ask (`RF_AGENT_READ_ONLY=1` denies; owner's local
 `autonomous` policy via `/autonomie on|off` in Copilot Chat: only important
-phases ask). Qualify host loading.
+phases ask; only a human switches it, and changing an approval rule asks
+under every policy). Qualify host loading.
 `agent_contract.py` validates hashes/supplied facts; `agent_journal.py` records
 recovery milestones, never replays. `agent_handover.py` keeps each mission's
 handover trail (`results/agent_runs/<mission>/handover/NNNN.json`, one
