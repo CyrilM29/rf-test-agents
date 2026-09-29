@@ -7,7 +7,13 @@ import re
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+# Schéma 1 : les sidecars signés avant que les agents portent une version
+# (2026-09-29). Toujours valides, jamais réécrits pour paraître récents.
+LEGACY_SCHEMA_VERSIONS = frozenset({1})
+_BASE_FIELDS = frozenset({"schema_version", "mission_id", "target", "invariant",
+                          "scope", "mode", "budgets", "evidence"})
+_RELEASE_VERSION = re.compile(r"\d+\.\d+\.\d+")
 HEAL_VERDICTS = frozenset({
     "repaired_verified", "application_defect", "blocked", "needs_human", "not_verified",
 })
@@ -28,13 +34,30 @@ def confined_path(root: Path, value: object) -> Path:
     return path
 
 
+def validate_producer(value: object) -> dict:
+    """The agent that signed the handoff, and the version its definition carried.
+
+    Schema 2 names it so a plan can be traced to the agent release that wrote
+    it; the version is the definition's `version` front-matter field."""
+    if not isinstance(value, dict) or set(value) != {"agent", "version"}:
+        raise ValueError("Invalid producer fields")
+    identifier(value["agent"])
+    if not isinstance(value["version"], str) or not _RELEASE_VERSION.fullmatch(value["version"]):
+        raise ValueError("Producer version must be X.Y.Z")
+    return value
+
+
 def validate_handoff(data: object, root: Path) -> dict:
-    required = {"schema_version", "mission_id", "target", "invariant", "scope",
-                "mode", "budgets", "evidence"}
-    if not isinstance(data, dict) or set(data) != required:
+    if not isinstance(data, dict) or "schema_version" not in data:
         raise ValueError("Invalid handoff fields")
-    if type(data["schema_version"]) is not int or data["schema_version"] != SCHEMA_VERSION:
+    schema = data["schema_version"]
+    if type(schema) is not int or schema not in LEGACY_SCHEMA_VERSIONS | {SCHEMA_VERSION}:
         raise ValueError("Unsupported handoff schema")
+    required = _BASE_FIELDS | ({"producer"} if schema == SCHEMA_VERSION else set())
+    if set(data) != required:
+        raise ValueError("Invalid handoff fields")
+    if schema == SCHEMA_VERSION:
+        validate_producer(data["producer"])
     identifier(data["mission_id"])
     identifier(data["target"])
     if not isinstance(data["invariant"], str) or not data["invariant"].strip():

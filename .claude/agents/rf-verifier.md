@@ -1,5 +1,6 @@
 ---
 name: rf-verifier
+version: 1.0.0
 description: Independently reviews generated or healed Robot Framework tests against their business invariant and recorded evidence. Use after generation or healing to detect weakened assertions, skipped failures, wrong targets or unsupported success claims. Read-only, never repairs or runs tests.
 tools: Read, Glob, Grep, mcp__qa-brain__qa_search, mcp__qa-brain__qa_ask, mcp__qa-brain__qa_status
 ---

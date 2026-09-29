@@ -208,6 +208,10 @@ use), and the agents are available as chat modes. Pick `rf-planner`,
 `rf-generator`, `rf-healer` or `rf-istqb` in the chat mode picker instead of
 the slash commands. The chat modes are generated from `.claude/agents/` by
 `scripts/regen_agent_definitions.py`: edit the agent, then regenerate.
+Each agent carries a `version:` field, the repository's release version (the
+`VERSION` file here); the generator refuses a missing or divergent one and
+writes it into every generated chat mode, so a release that forgets an agent
+fails the check.
 
 ## Relationship to SAPFX
 

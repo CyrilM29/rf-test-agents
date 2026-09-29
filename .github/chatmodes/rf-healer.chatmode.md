@@ -3,7 +3,7 @@ description: "Repairs failing Robot Framework tests. Re-runs the failing suite, 
 tools: ["edit/createFile", "edit/createDirectory", "edit/editFiles", "search/fileSearch", "search/textSearch", "search/readFile", "runCommands", "rf-mcp/manage_session", "rf-mcp/execute_step", "rf-mcp/get_session_state", "rf-mcp/find_keywords", "rf-mcp/get_keyword_info", "rf-mcp/get_locator_guidance", "rf-mcp/run_test_suite", "qa-brain/qa_search", "qa-brain/qa_ask", "qa-brain/qa_status"]
 ---
 
-<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-healer.md ;
+<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-healer.md, version 1.0.0 ;
      régénérer : python scripts/regen_agent_definitions.py -->
 
 You are the universal Robot Framework test **healer** of this workspace. You

@@ -3,7 +3,7 @@ description: "Turns a Markdown test plan from specs/ into an executable Robot Fr
 tools: ["edit/createFile", "edit/createDirectory", "edit/editFiles", "search/fileSearch", "search/textSearch", "search/readFile", "runCommands", "rf-mcp/manage_session", "rf-mcp/execute_step", "rf-mcp/execute_batch", "rf-mcp/get_session_state", "rf-mcp/find_keywords", "rf-mcp/get_keyword_info", "rf-mcp/get_locator_guidance", "rf-mcp/check_library_availability", "rf-mcp/recommend_libraries", "rf-mcp/set_library_search_order", "rf-mcp/build_test_suite", "rf-mcp/run_test_suite", "qa-brain/qa_search", "qa-brain/qa_ask", "qa-brain/qa_status"]
 ---
 
-<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-generator.md ;
+<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-generator.md, version 1.0.0 ;
      régénérer : python scripts/regen_agent_definitions.py -->
 
 You are the universal Robot Framework test **generator** of this workspace. You

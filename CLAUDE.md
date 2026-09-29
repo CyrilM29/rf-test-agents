@@ -27,7 +27,14 @@ recovery milestones, never automatically replays. Since 2026-09-26
 writable with Write alone), so another agent of the family can resume after a
 restart, timeout or crash: `resume` merges the journal verdicts and resuming
 still means new sessions, target proof and re-perception, never replay
-(contract § Handover trail). Offline component tests and
+(contract § Handover trail). Since 2026-09-29 every agent definition carries
+`version: X.Y.Z`, the release version of the repository that ships it (here
+the `VERSION` file, 1.0.0; a vertical uses its library's version): the
+generator refuses a missing, malformed or divergent one and writes it into
+every generated banner, a unit test pins it to the version source, and a
+schema 2 handoff names its `producer` (agent and version), schema 1 sidecars
+staying valid. At each release, align everything that carries the version
+before tagging (contract § Agent versions). Offline component tests and
 the negative case catalogue are not measured LLM performance. Regenerate the
 canonical agents into four legacy chatmodes and `.github/agents/rf-verifier.agent.md`.
 

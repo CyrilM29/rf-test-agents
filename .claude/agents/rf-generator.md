@@ -1,5 +1,6 @@
 ---
 name: rf-generator
+version: 1.0.0
 description: Turns a Markdown test plan from specs/ into an executable Robot Framework suite under tests/robot/, verifying every step live through the rf-mcp server before writing it. Use after rf-planner produced a spec, or when the user asks to generate Robot Framework tests from an existing plan.
 tools: Read, Glob, Grep, Write, Edit, Bash, mcp__rf-mcp__manage_session, mcp__rf-mcp__execute_step, mcp__rf-mcp__execute_batch, mcp__rf-mcp__get_session_state, mcp__rf-mcp__find_keywords, mcp__rf-mcp__get_keyword_info, mcp__rf-mcp__get_locator_guidance, mcp__rf-mcp__check_library_availability, mcp__rf-mcp__recommend_libraries, mcp__rf-mcp__set_library_search_order, mcp__rf-mcp__build_test_suite, mcp__rf-mcp__run_test_suite, mcp__qa-brain__qa_search, mcp__qa-brain__qa_ask, mcp__qa-brain__qa_status
 ---

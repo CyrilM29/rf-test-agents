@@ -16,6 +16,7 @@ import regen_agent_definitions as regen  # noqa: E402
 
 AGENT = """---
 name: rf-demo
+version: 1.2.3
 description: Agent de démonstration.
 tools: Read, Glob, Write, Bash, mcp__rf-mcp__execute_step
 ---
@@ -104,8 +105,50 @@ class TestGeneration:
             regen.iter_renders(tmp_path)
 
 
+class TestVersion:
+    """Règle du 2026-09-29 : chaque définition porte la version de release du
+    dépôt, la même pour tous ses agents, et les cibles la portent aussi."""
+
+    def test_la_banniere_porte_la_version(self, tmp_path):
+        (_, content), = regen.iter_renders(make_repo(tmp_path))
+        assert "rf-demo.md, version 1.2.3 ;" in content
+        assert "version" not in content.split("---")[1]  # pas dans le frontmatter VS Code
+
+    def test_version_absente_refusee(self, tmp_path):
+        repo = make_repo(tmp_path, AGENT.replace("version: 1.2.3\n", ""))
+        with pytest.raises(ValueError, match="lacks 'version'"):
+            regen.iter_renders(repo)
+
+    @pytest.mark.parametrize("valeur", ["1.2", "v1.2.3", "1.2.3-rc1", "latest"])
+    def test_version_mal_formee_refusee(self, tmp_path, valeur):
+        repo = make_repo(tmp_path, AGENT.replace("1.2.3", valeur))
+        with pytest.raises(ValueError, match="is not X.Y.Z"):
+            regen.iter_renders(repo)
+
+    def test_deux_agents_en_desaccord_refuses_en_les_nommant(self, tmp_path):
+        repo = make_repo(tmp_path)
+        (repo / ".claude" / "agents" / "rf-autre.md").write_text(
+            AGENT.replace("rf-demo", "rf-autre").replace("1.2.3", "1.2.4"),
+            encoding="utf-8")
+        with pytest.raises(ValueError, match="rf-autre.md=1.2.4, rf-demo.md=1.2.3"):
+            regen.iter_renders(repo)
+
+    def test_un_changement_de_version_rend_les_cibles_obsoletes(self, tmp_path):
+        repo = make_repo(tmp_path)
+        regen.main(["--root", str(repo)])
+        source = repo / ".claude" / "agents" / "rf-demo.md"
+        source.write_text(AGENT.replace("1.2.3", "1.2.4"), encoding="utf-8")
+        assert regen.main(["--root", str(repo), "--check"]) == 1
+
+
 class TestDepotReel:
     def test_les_chatmodes_committes_sont_a_jour(self):
         """Le garde de la CI, joué ici : toute édition d'un agent doit être
         suivie d'une régénération dans le même commit."""
         assert regen.main(["--root", str(_ROOT), "--check"]) == 0
+
+    def test_les_agents_portent_la_version_du_depot(self):
+        """Ce dépôt ne publie pas de paquet : sa version vit dans VERSION, et
+        c'est elle que ses agents portent. La changer sans eux fait échouer ici."""
+        attendue = (_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        assert regen.shared_version(_ROOT) == attendue

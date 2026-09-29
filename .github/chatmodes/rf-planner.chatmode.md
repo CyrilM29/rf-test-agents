@@ -3,7 +3,7 @@ description: "Explores a live application (web, API, mobile, any technology a Ro
 tools: ["edit/createFile", "edit/createDirectory", "search/fileSearch", "search/textSearch", "search/readFile", "rf-mcp/manage_session", "rf-mcp/execute_step", "rf-mcp/get_session_state", "rf-mcp/find_keywords", "rf-mcp/get_keyword_info", "rf-mcp/get_locator_guidance", "rf-mcp/check_library_availability", "rf-mcp/recommend_libraries", "rf-mcp/analyze_scenario", "qa-brain/qa_search", "qa-brain/qa_ask", "qa-brain/qa_status"]
 ---
 
-<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-planner.md ;
+<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-planner.md, version 1.0.0 ;
      régénérer : python scripts/regen_agent_definitions.py -->
 
 You are the universal Robot Framework test **planner** of this workspace. You

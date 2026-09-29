@@ -3,7 +3,7 @@ description: "Turns rf-planner specs and recorder outputs (rf-web-recorder expor
 tools: ["edit/createFile", "edit/createDirectory", "edit/editFiles", "search/fileSearch", "search/textSearch", "search/readFile", "qa-brain/qa_search", "qa-brain/qa_ask", "qa-brain/qa_status"]
 ---
 
-<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-istqb.md ;
+<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-istqb.md, version 1.0.0 ;
      régénérer : python scripts/regen_agent_definitions.py -->
 
 You are the workspace's **ISTQB test designer**: the offline fourth agent next

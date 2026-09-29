@@ -1,5 +1,6 @@
 ---
 name: rf-healer
+version: 1.0.0
 description: Repairs failing Robot Framework tests. Re-runs the failing suite, diagnoses the failure against the live application through the rf-mcp server, then patches the resources layer (not the tests). Use when a suite or test goes red after an application upgrade, UI change or locator drift.
 tools: Read, Glob, Grep, Edit, Write, Bash, mcp__rf-mcp__manage_session, mcp__rf-mcp__execute_step, mcp__rf-mcp__get_session_state, mcp__rf-mcp__find_keywords, mcp__rf-mcp__get_keyword_info, mcp__rf-mcp__get_locator_guidance, mcp__rf-mcp__run_test_suite, mcp__qa-brain__qa_search, mcp__qa-brain__qa_ask, mcp__qa-brain__qa_status
 ---

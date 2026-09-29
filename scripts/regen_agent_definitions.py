@@ -21,6 +21,14 @@ frontmatter change de dialecte :
   (``packages/playwright/src/agents/generateAgents.ts``), granularité
   par outil préservée.
 
+Chaque définition porte aussi un ``version: X.Y.Z`` (règle du 2026-09-29) :
+la version de release du dépôt qui la livre, la MÊME pour tous ses agents.
+Le générateur l'exige, refuse deux agents d'un même dépôt en désaccord, et
+l'inscrit dans la bannière des cibles : après un changement de version, un
+``--check`` signale donc toute cible non régénérée. La source de ce numéro
+est propre à chaque dépôt (ici le fichier ``VERSION`` ; dans une verticale
+qui publie une bibliothèque, son ``pyproject.toml``) et un test l'y épingle.
+
 Usage ::
 
     python scripts/regen_agent_definitions.py           # (ré)écrit .github/chatmodes/
@@ -28,6 +36,7 @@ Usage ::
 """
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -64,9 +73,11 @@ VSCODE_TOOLS_ORDER = [
 ]
 
 _BANNER = (
-    "<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : {source} ;\n"
+    "<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : {source}, version {version} ;\n"
     "     régénérer : python scripts/regen_agent_definitions.py -->"
 )
+
+_VERSION_RE = re.compile(r"\d+\.\d+\.\d+")
 
 
 def _read_text(path):
@@ -128,23 +139,52 @@ def render_chatmode(source_rel, meta, body):
     """Rend un chat mode VS Code depuis (méta, corps) d'une définition Claude
     Code. Les valeurs du frontmatter sont sérialisées en JSON : sous-ensemble
     de YAML : pour un échappement correct sans dépendance."""
-    for required in ("description", "tools"):
+    for required in ("description", "tools", "version"):
         if required not in meta:
             raise ValueError("front matter of %s lacks %r" % (source_rel, required))
+    if not _VERSION_RE.fullmatch(meta["version"]):
+        raise ValueError("front matter of %s: version %r is not X.Y.Z"
+                         % (source_rel, meta["version"]))
+    # La version n'entre PAS dans le frontmatter VS Code (champ non reconnu
+    # par Copilot) : elle voyage dans la bannière, que --check compare.
     front = "---\ndescription: %s\ntools: %s\n---\n" % (
         json.dumps(meta["description"], ensure_ascii=False),
         json.dumps(map_tools(meta["tools"]), ensure_ascii=False))
-    return front + "\n" + _BANNER.format(source=source_rel) + "\n" + body
+    banner = _BANNER.format(source=source_rel, version=meta["version"])
+    return front + "\n" + banner + "\n" + body
+
+
+def shared_version(root):
+    """La version commune des définitions du dépôt ; échoue si elles divergent.
+
+    Un dépôt livre ses agents ensemble, sous UNE version de release : deux
+    numéros différents signalent un alignement oublié à la release, pas un
+    choix, d'où un refus qui les nomme au lieu d'en retenir un."""
+    versions = {}
+    for src in _sources(Path(root)):
+        meta, _ = parse_front_matter(_read_text(src))
+        versions[src.name] = meta.get("version", "<absente>")
+    if len(set(versions.values())) != 1:
+        raise ValueError(
+            "agent definitions disagree on version (%s): align every "
+            "definition on the release version"
+            % ", ".join("%s=%s" % item for item in sorted(versions.items())))
+    return next(iter(versions.values()))
+
+
+def _sources(root):
+    agents_dir = root / ".claude" / "agents"
+    sources = sorted(agents_dir.glob("rf-*.md"))
+    if not sources:
+        raise FileNotFoundError("aucune définition d'agent rf-*.md sous %s" % agents_dir)
+    return sources
 
 
 def iter_renders(root):
     """Liste des couples ``(cible, contenu rendu)`` pour chaque source
     ``.claude/agents/rf-*.md``, triée (sortie déterministe)."""
     root = Path(root)
-    agents_dir = root / ".claude" / "agents"
-    sources = sorted(agents_dir.glob("rf-*.md"))
-    if not sources:
-        raise FileNotFoundError("aucune définition d'agent rf-*.md sous %s" % agents_dir)
+    sources = _sources(root)
     renders = []
     for src in sources:
         meta, body = parse_front_matter(_read_text(src))
@@ -159,6 +199,7 @@ def iter_renders(root):
                 raise ValueError("Verifier tools must remain read-only")
             dest = root / ".github" / "agents" / (name + ".agent.md")
         renders.append((dest, render_chatmode(source_rel, meta, body)))
+    shared_version(root)
     return renders
 
 

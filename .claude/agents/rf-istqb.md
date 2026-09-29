@@ -1,5 +1,6 @@
 ---
 name: rf-istqb
+version: 1.0.0
 description: Turns rf-planner specs and recorder outputs (rf-web-recorder exports, recorded suites, plan drafts) into ISTQB test plans and test cases under specs/istqb/, human-readable AND replayable by an AI with any test framework (normalized replay block per test case). Use when the user asks for ISTQB documentation of a tested flow, or to formalize planner/recorder material into test-design documents.
 tools: Read, Glob, Grep, Write, Edit, mcp__qa-brain__qa_search, mcp__qa-brain__qa_ask, mcp__qa-brain__qa_status
 ---

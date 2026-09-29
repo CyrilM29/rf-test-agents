@@ -1,5 +1,6 @@
 ---
 name: rf-planner
+version: 1.0.0
 description: Explores a live application (web, API, mobile, any technology a Robot Framework library can drive) through the rf-mcp server and writes a human-readable test plan under specs/. Use when the user wants to scope test coverage for an application, page or business flow BEFORE any Robot Framework code is written.
 tools: Read, Glob, Grep, Write, mcp__rf-mcp__manage_session, mcp__rf-mcp__execute_step, mcp__rf-mcp__get_session_state, mcp__rf-mcp__find_keywords, mcp__rf-mcp__get_keyword_info, mcp__rf-mcp__get_locator_guidance, mcp__rf-mcp__check_library_availability, mcp__rf-mcp__recommend_libraries, mcp__rf-mcp__analyze_scenario, mcp__qa-brain__qa_search, mcp__qa-brain__qa_ask, mcp__qa-brain__qa_status
 ---

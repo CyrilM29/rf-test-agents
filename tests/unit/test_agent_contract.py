@@ -52,10 +52,17 @@ def test_untrusted_facts_cannot_select_success(changes):
 def handoff(tmp_path):
     proof = tmp_path / "proof.txt"
     proof.write_text("Observed invariant", encoding="utf-8")
-    return dict(schema_version=1, mission_id="mission-1", target="lab-1",
+    return dict(schema_version=2, mission_id="mission-1", target="lab-1",
                 invariant="Original assertion remains unchanged", scope=["resources"],
                 mode="read_only", budgets=dict(attempts=2, tool_calls=20, seconds=900),
-                evidence=[dict(path="proof.txt", sha256=hashlib.sha256(proof.read_bytes()).hexdigest())])
+                evidence=[dict(path="proof.txt", sha256=hashlib.sha256(proof.read_bytes()).hexdigest())],
+                producer=dict(agent="rf-planner", version="1.0.0"))
+
+
+def legacy_handoff(tmp_path):
+    data = handoff(tmp_path)
+    del data["producer"]
+    return data | {"schema_version": 1}
 
 
 def test_handoff_checks_real_evidence_and_detects_changed_content(tmp_path):
@@ -71,7 +78,26 @@ def test_handoff_checks_real_evidence_and_detects_changed_content(tmp_path):
     {"evidence": []}, {"schema_version": True}, {"mode": "bypass"},
     {"budgets": {"attempts": 0, "tool_calls": 20, "seconds": 900}},
     {"mission_id": "../another-session"}, {"invariant": ""},
+    {"schema_version": 3},
+    {"producer": {"agent": "rf-planner"}},
+    {"producer": {"agent": "rf-planner", "version": "latest"}},
+    {"producer": {"agent": "../rf-planner", "version": "1.0.0"}},
+    {"producer": {"agent": "rf-planner", "version": "1.0.0", "note": "trust me"}},
 ])
 def test_handoff_rejects_missing_or_unsafe_fields(tmp_path, changes):
     with pytest.raises(ValueError):
         contract.validate_handoff(handoff(tmp_path) | changes, tmp_path)
+
+
+def test_schema_2_requires_the_producer(tmp_path):
+    data = handoff(tmp_path)
+    del data["producer"]
+    with pytest.raises(ValueError, match="Invalid handoff fields"):
+        contract.validate_handoff(data, tmp_path)
+
+
+def test_legacy_schema_1_stays_valid_without_producer(tmp_path):
+    data = legacy_handoff(tmp_path)
+    assert contract.validate_handoff(data, tmp_path) == data
+    with pytest.raises(ValueError, match="Invalid handoff fields"):
+        contract.validate_handoff(data | {"producer": handoff(tmp_path)["producer"]}, tmp_path)

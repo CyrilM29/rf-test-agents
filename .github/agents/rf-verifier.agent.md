@@ -3,7 +3,7 @@ description: "Independently reviews generated or healed Robot Framework tests ag
 tools: ["search/fileSearch", "search/textSearch", "search/readFile", "qa-brain/qa_search", "qa-brain/qa_ask", "qa-brain/qa_status"]
 ---
 
-<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-verifier.md ;
+<!-- FICHIER GÉNÉRÉ, ne pas éditer. Source : .claude/agents/rf-verifier.md, version 1.0.0 ;
      régénérer : python scripts/regen_agent_definitions.py -->
 
 You are the independent Robot Framework evidence verifier. Review artifacts;

@@ -49,14 +49,15 @@ report instead of acquiring shell tools.
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "mission_id": "example-1",
   "target": "lab-1",
   "invariant": "Original business assertion to preserve",
   "scope": ["resources/page_objects"],
   "mode": "read_only",
   "budgets": {"attempts": 2, "tool_calls": 20, "seconds": 900},
-  "evidence": [{"path": "specs/example.md", "sha256": "REPLACE_WITH_REAL_SHA256"}]
+  "evidence": [{"path": "specs/example.md", "sha256": "REPLACE_WITH_REAL_SHA256"}],
+  "producer": {"agent": "rf-planner", "version": "1.0.0"}
 }
 ```
 
@@ -65,6 +66,22 @@ match. The producer prepares hashes; agents without shell request prepared
 evidence. Paths are workspace-relative. Evidence identifies run, target and
 date. Hashes prove freshness, not authenticity or business correctness.
 Never include credentials or sensitive data in identifiers or metadata.
+`producer` names the agent that signed the sidecar and the `version` its
+definition carries; re-signing evidence never changes it. Schema 1 sidecars,
+signed before agents carried a version, stay valid as they are: never rewrite
+one to look recent.
+
+### Agent versions
+
+Every agent definition carries `version: X.Y.Z` in its front matter: the
+release version of the repository that ships it, the same for all its agents
+(this repository has no package, its version lives in `VERSION`; a vertical
+that publishes a library uses that library's version). The generator refuses
+a missing, malformed or divergent version, and writes it into the banner of
+every generated target, so a version change leaves any target that was not
+regenerated failing `--check`. A unit test pins the agents to the repository's
+version source. At every release, align EVERYTHING that carries the version
+before tagging: packages, agent definitions, generated targets, changelog.
 
 ## Roles and verdicts
 

@@ -19,7 +19,11 @@ records recovery milestones, never replays. `agent_handover.py` keeps each
 mission's handover trail (`results/agent_runs/<mission>/handover/NNNN.json`,
 one immutable entry per file, Write alone suffices): record as you go, resume
 with `resume` (journal verdicts merged; re-open sessions, prove the target,
-re-perceive, never replay). Offline tests do not measure LLM
+re-perceive, never replay). Every agent definition carries `version: X.Y.Z`
+(the repository's release version, here `VERSION`), refused by the generator
+when missing or divergent and written into generated banners; a schema 2
+handoff names its `producer` (agent and version), schema 1 stays valid; align
+everything on the version at each release. Offline tests do not measure LLM
 quality. Regenerate canonical sources into four legacy chatmodes plus
 `.github/agents/rf-verifier.agent.md`.
 
