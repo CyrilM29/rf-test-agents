@@ -34,6 +34,7 @@ fabriquée.
 
 **Comment appliquer :** à chaque release d'un dépôt de la famille, avant le
 tag, aligner les paquets, les définitions d'agents, les cibles générées et
-le changelog, puis laisser les gardes le confirmer. Propagé à SAPFX le même
-jour (agents en 0.8.2, handoff schéma 2) ; ODOOFX et RF_GenAI restent à
-aligner, avec la version de leur propre release.
+le changelog, puis laisser les gardes le confirmer. Propagé le même jour à
+SAPFX (agents en 0.8.2, version des bibliothèques), ODOOFX (0.1.0, version
+de sa bibliothèque) et RF_GenAI (fichier `VERSION`, 1.0.0, aucun paquet
+publié), handoff schéma 2 partout.
