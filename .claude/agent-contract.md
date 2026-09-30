@@ -92,8 +92,14 @@ before tagging: packages, agent definitions, generated targets, changelog.
 - Healer: repair the authorized automation surface, never test bodies or the
   application. Data drift requires `needs_human`, never unauthorized data
   generation or spec edits. No skip, baseline update or weaker assertion for green.
-- ISTQB: propagate invariant and evidence into cases/replay, keeping unsupported
-  requirements open. No live execution.
+- ISTQB: design mode propagates invariant and evidence into cases/replay,
+  keeping unsupported requirements open. Review mode audits a generated suite
+  for test design (traceability, partitions and boundaries, assertion strength,
+  maintainability, independence) and writes a dated report under
+  `specs/istqb/revues/`; it edits nothing else and runs after the verifier.
+  No live execution in either mode. Review verdicts (`approved`,
+  `approved_with_recommendations`, `changes_requested`, `not_reviewable`) stay
+  separate from the verifier's.
 - Verifier: independently review original/final artifacts and evidence, report
   in conversation only. No editing, shell, test execution or delegation.
 

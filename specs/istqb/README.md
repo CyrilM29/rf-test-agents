@@ -19,7 +19,30 @@ Chaque document couvre les deux niveaux :
   (moteur = la stratégie de localisation, repli éventuel). C'est ce bloc qui
   rend le cas rejouable par une IA avec n'importe quel framework de test.
 
-Règles du répertoire :
+## `revues/` : la revue ISTQB des suites générées
+
+Le second mode de **rf-istqb** (`/rf-istqb revue <suite ou slug>`) audite une
+suite générée face à son plan et écrit un rapport daté dans
+`specs/istqb/revues/<slug>.revue.md`. La revue est **systématique** : chaque
+suite que `rf-generator` produit en reçoit une, après le passage du
+`rf-verifier` (le vérificateur juge l'invariant métier et les preuves, la
+revue ISTQB juge la conception du test).
+
+Un rapport porte : l'objet revu, l'invariant propagé du sidecar, le verdict
+(`approved`, `approved_with_recommendations`, `changes_requested`,
+`not_reviewable`, distincts de ceux du vérificateur), la couverture du plan par
+les suites, les constats numérotés `F<n>` par sévérité (Bloquant, Recommandé,
+Remarque) sur six axes (traçabilité, conception des cas, force des assertions,
+maintenabilité, indépendance et sûreté, honnêteté de la cible et du canal), les
+cas de test à ajouter, et, dès la deuxième revue, le suivi des constats
+précédents. Une nouvelle revue du même sujet MET À JOUR le fichier : les
+numéros de constats restent stables, aucun constat levé n'est effacé.
+
+La revue ne modifie rien d'autre que son rapport : jamais `tests/robot/`,
+`resources/`, les plans ni les sidecars. Un constat est une recommandation
+pour le générateur ou pour un humain, pas un correctif.
+
+## Règles du répertoire :
 
 - **Ancré dans l'observé** : toute valeur, tout localisateur, tout résultat
   attendu vient d'une source (plan, enregistrement, suite) ; ce qu'aucune

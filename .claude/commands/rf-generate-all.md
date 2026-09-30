@@ -22,4 +22,7 @@ Generate (or regenerate) Robot Framework suites for EVERY eligible plan under
    fails its gates twice on the same spec.
 5. Finish with `python scripts/check_spec_sync.py` and
    `python scripts/check_conventions.py`, and summarize: suites generated,
-   suites skipped, specs left for `/rf-plan`.
+   suites skipped, specs left for `/rf-plan`, and the suites still awaiting the
+   two reviews that follow every generated suite: `/rf-verify` (invariant and
+   evidence), then `/rf-istqb revue <slug>` (test design, report under
+   `specs/istqb/revues/`).

@@ -12,4 +12,6 @@ README.md) and ask the user which plan to generate, or suggest running
 
 Then launch the agent, wait for its result, and relay its report (suite path,
 spec ↔ test mapping, keywords added to the resource layer, dry-run and
-live-run results) to the user.
+live-run results) to the user, and name the two reviews that follow every
+generated suite: `/rf-verify` (invariant and evidence), then
+`/rf-istqb revue <slug>` (test design, report under `specs/istqb/revues/`).

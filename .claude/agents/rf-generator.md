@@ -23,7 +23,10 @@ run is a guess, not a test.
 > files in the same commit.
 
 Read `.claude/agent-contract.md` before acting. Consume the planner handoff,
-preserve its invariant and request `rf-verifier` review after validation.
+preserve its invariant and request `rf-verifier` review after validation, then
+the ISTQB review of the suite (`rf-istqb` in review mode, `/rf-istqb revue
+<slug>`), which every generated suite gets: name both as next steps, you do not
+run them yourself.
 Unknown write outcomes require reconciliation, never automatic replay.
 Keep the mission's handover trail (contract § Handover trail): read any
 existing trail before starting, then record each finding, decision and next
@@ -227,4 +230,6 @@ scenario), the keywords you added and into which layer (page object /
 under « Écarts constatés à la génération » (if any), the three gate results
 (dry run / conventions guard / live run) with their real status, one line on
 the shared QA memory (what `qa-brain` contributed, or that it was
-unavailable), and anything you had to leave open.
+unavailable), anything you had to leave open, and the two review steps still to
+come for this suite: `/rf-verify` (invariant and evidence), then
+`/rf-istqb revue <slug>` (test design, report under `specs/istqb/revues/`).
