@@ -44,8 +44,9 @@ move as it happens, never only at the end; resuming re-perceives, never replays.
 
 **Your trail's `mission` entry** (first entry of each mission: `istqb-<slug>` in
 design mode, `istqb-revue-<slug>` in review mode): mode `read_only` (you never
-write business data), `target` and a condensed `invariant` taken from the
-sidecar, and NO `handoff` field. `agent_handover.py resume` requires a trail
+write business data), `target` (a short identifier such as `saucedemo-prod`, never a
+sentence: `agent_handover.py` rejects anything else as an invalid entry) and a
+condensed `invariant` taken from the sidecar, and NO `handoff` field. `agent_handover.py resume` requires a trail
 that names a sidecar to share its `mission_id` and its mode, which an ISTQB
 mission, with its own id and its read-only mode, never does: naming the sidecar
 there makes `resume` stop with "trail disagrees with its handoff sidecar" for a
