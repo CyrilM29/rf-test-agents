@@ -95,6 +95,14 @@ APPROVAL_COMMAND = re.compile(
     re.IGNORECASE | re.VERBOSE,
 )
 PATCH_TARGET = re.compile(r"^\*\*\* (?:Add|Update|Delete) File: (.+)$", re.MULTILINE)
+# Outils a entree libre : l'hote (Copilot CLI) transmet le texte brut du patch,
+# sans enveloppe d'objet. Aucun autre outil n'a de texte libre pour entree.
+RAW_INPUT_TOOLS = frozenset({"apply_patch"})
+# La Copilot CLI renomme aussi l'outil en traduisant l'appel au format Claude
+# (mesure du 2026-10-03 : tool_name chaine, different de `apply_patch`) : le
+# patch se reconnait a son enveloppe, pas au nom que l'hote lui donne.
+PATCH_ENVELOPE = "*** Begin Patch"
+SAFE_TOOL_NAME = re.compile(r"[\w./:-]{1,64}")
 
 
 def decision(payload: object, *, read_only: bool = False, policy: str = "confirm") -> dict:
@@ -103,8 +111,18 @@ def decision(payload: object, *, read_only: bool = False, policy: str = "confirm
         return response("deny", "Invalid hook input.")
     tool = payload.get("tool_name")
     arguments = payload.get("tool_input")
+    if isinstance(tool, str) and isinstance(arguments, str) and (
+            tool in RAW_INPUT_TOOLS or arguments.lstrip().startswith(PATCH_ENVELOPE)):
+        arguments = {"input": arguments}
     if not isinstance(tool, str) or not isinstance(arguments, dict):
-        return response("deny", "Missing tool name or structured arguments.")
+        # La forme recue, jamais le contenu des arguments : un hote qui ne montre
+        # que stderr doit pouvoir dire ce qu'il a envoye.
+        named = repr(tool) if isinstance(tool, str) and SAFE_TOOL_NAME.fullmatch(tool) else type(tool).__name__
+        return response("deny", (
+            f"Missing tool name or structured arguments (tool_name: {named}, "
+            f"tool_input: {type(arguments).__name__}, "
+            f"payload keys: {sorted(k for k in payload if isinstance(k, str))})."
+        ))
     paths = [arguments[key] for key in ("file_path", "filePath") if key in arguments]
     if any(not isinstance(path, str) for path in paths):
         return response("deny", "Invalid file path.")
@@ -187,7 +205,13 @@ def main() -> int:
     except Exception:
         result = response("deny", "Permission hook failed; execution is denied.")
     print(json.dumps(result))
-    return 2 if result.get("hookSpecificOutput", {}).get("permissionDecision") == "deny" else 0
+    output = result.get("hookSpecificOutput", {})
+    if output.get("permissionDecision") != "deny":
+        return 0
+    # Un hote qui lance la commande par un shell ramene tout code non nul a 1 et
+    # ignore le JSON de stdout : la raison du refus doit aussi etre sur stderr.
+    print(output.get("permissionDecisionReason", ""), file=sys.stderr)
+    return 2
 
 
 if __name__ == "__main__":

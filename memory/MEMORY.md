@@ -3,6 +3,7 @@
 One line per entry; open an entry only if its description is relevant.
 Rules: [README.md](README.md).
 
+- [Hook et apply_patch sous la Copilot CLI](hook-copilot-cli-apply-patch-texte-brut.md) : 2026-10-03, l'hote traduit l'appel au format Claude, renomme l'outil et passe le texte brut du patch ; le patch se reconnait a son enveloppe `*** Begin Patch`, pas a son nom ; un refus nomme la forme recue sur stderr ; ce hook en `.*` se modifie en une seule ecriture
 - [Agents versionnes, alignes a la release](agents-versionnes-alignes-a-la-release.md) : 2026-09-29, chaque definition porte `version: X.Y.Z` (version de release du depot, ici `VERSION`), exigee par le generateur, inscrite dans les cibles, epinglee par un test ; handoff schema 2 avec `producer`, schema 1 toujours valide ; a chaque release tout est aligne avant le tag ; propage le meme jour a SAPFX (0.8.2), ODOOFX (0.1.0) et RF_GenAI (VERSION 1.0.0)
 - [Fil de reprise a cote du journal](fil-de-reprise-a-cote-du-journal.md) : 2026-09-26, la regle « consigner au fil de l'eau pour qu'un autre agent reprenne » tenue par des entrees immuables (une par fichier, ecrivables avec Write seul) a cote du journal ; `resume` fusionne les verdicts du journal, jamais de rejeu, de session restauree ni de permission heritee
 - [STDD lu a l'aune de TDD](stdd-lu-a-l-aune-de-tdd.md) : 2026-09-25, la meme logique que TDD une brique plus tot ; la spec est verte par defaut en theorie (personne ne l'execute), le STDD la confronte au systeme reel avant le moindre test ; jamais « contre TDD »

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/hook_agent_permissions.py",
+            "command": "python -c \"import os,sys,subprocess; p=os.path.join(os.environ.get('CLAUDE_PROJECT_DIR','.'),'scripts','hook_agent_permissions.py'); os.path.isfile(p) or (sys.stderr.write('hook script not found: '+p),sys.exit(2)); sys.exit(subprocess.call([sys.executable,p]))\"",
             "timeout": 10
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/hook_guards.py",
+            "command": "python -c \"import os,sys,subprocess; p=os.path.join(os.environ.get('CLAUDE_PROJECT_DIR','.'),'scripts','hook_guards.py'); os.path.isfile(p) or (sys.stderr.write('hook script not found: '+p),sys.exit(2)); sys.exit(subprocess.call([sys.executable,p]))\"",
             "timeout": 30,
             "statusMessage": "Gardes spec-sync + conventions…"
           }

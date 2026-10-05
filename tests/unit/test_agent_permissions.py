@@ -1,6 +1,7 @@
 """Contre-epreuves des permissions sur les deux dialectes d'hote."""
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -59,6 +60,81 @@ def test_cli_invalid_json_denies_without_leaking_input():
     assert result.returncode == 2
     assert "private-input" not in result.stdout + result.stderr
     assert json.loads(result.stdout)["hookSpecificOutput"]["permissionDecision"] == "deny"
+
+
+def test_cli_denial_states_its_reason_on_stderr():
+    # Un hote qui lance la commande par un shell (PowerShell -Command) ramene tout
+    # code non nul a 1 et ignore le JSON de stdout : sans la raison sur stderr, le
+    # refus se lit « Hook command failed with code 1 » et rien d'autre.
+    result = subprocess.run([sys.executable, str(SCRIPT)], input="{}",
+                            capture_output=True, text=True, check=False)
+    assert result.returncode == 2
+    assert "Missing tool name or structured arguments (tool_name: NoneType" in result.stderr
+
+
+RAW_PATCH = ("*** Begin Patch\n*** Add File: /repo/comms/rapport.md\n+bonjour\n*** End Patch")
+RAW_PATCH_ON_RULES = ("*** Begin Patch\n*** Update File: /repo/.claude/settings.json\n"
+                      "@@\n-a\n+b\n*** End Patch")
+
+
+def test_copilot_cli_raw_patch_text_is_read_as_the_patch():
+    # Copilot CLI passe a `apply_patch` (outil libre) le texte brut du patch comme
+    # tool_input, sans enveloppe d'objet. Le refuser bloquait TOUTE ecriture par
+    # patch (9 refus sur 9 dans une session reelle) : il suit la voie des objets.
+    assert verdict("apply_patch", RAW_PATCH) == "ask"
+    assert verdict("apply_patch", RAW_PATCH, policy="autonomous") is None
+    assert verdict("apply_patch", RAW_PATCH, read_only=True) == "deny"
+
+
+def test_copilot_cli_raw_patch_text_cannot_change_the_approval_rules():
+    assert verdict("apply_patch", RAW_PATCH_ON_RULES, policy="autonomous") == "ask"
+    assert verdict("apply_patch", RAW_PATCH_ON_RULES) == "ask"
+    assert verdict("apply_patch", RAW_PATCH_ON_RULES, read_only=True) == "deny"
+
+
+@pytest.mark.parametrize("tool", ["Edit", "Write", "MultiEdit", "renamed_by_host"])
+def test_copilot_cli_raw_patch_is_recognised_whatever_the_host_names_the_tool(tool):
+    # Mesure du 2026-10-03 : la Copilot CLI traduit l'appel au format Claude et
+    # renomme l'outil (tool_name chaine, different de `apply_patch`, tool_input
+    # chaine brute). Le patch se reconnait a son enveloppe, ses cibles restent
+    # controlees et la lecture seule le refuse.
+    assert verdict(tool, RAW_PATCH) == "ask"
+    assert verdict(tool, RAW_PATCH_ON_RULES, policy="autonomous") == "ask"
+    assert verdict(tool, RAW_PATCH, read_only=True) == "deny"
+
+
+def test_structural_denial_names_the_shape_received_not_the_content():
+    reason = permissions.decision(
+        {"tool_name": "Write", "tool_input": "secret-content", "cwd": "x"}
+    )["hookSpecificOutput"]["permissionDecisionReason"]
+    assert "tool_name: 'Write'" in reason and "tool_input: str" in reason
+    assert "['cwd', 'tool_input', 'tool_name']" in reason
+    assert "secret-content" not in reason
+
+
+def test_structural_denial_never_echoes_an_unsafe_tool_name():
+    reason = permissions.decision(
+        {"tool_name": "x" * 65 + " secret", "tool_input": "content"}
+    )["hookSpecificOutput"]["permissionDecisionReason"]
+    assert "tool_name: str" in reason and "secret" not in reason
+
+
+@pytest.mark.parametrize("tool", ["unknown_tool", "Write", "Bash", "mcp__rf-mcp__execute_step"])
+def test_raw_text_input_stays_refused_for_every_other_tool(tool):
+    # Seul le patch a un texte libre pour entree : ailleurs une chaine brute n'est
+    # pas un argument structure et reste refusee, quelle que soit la politique.
+    assert verdict(tool, "echo anything", policy="autonomous") == "deny"
+    assert verdict(tool, "echo anything") == "deny"
+
+
+@pytest.mark.parametrize("tool", ["apply_patch", "Edit"])
+def test_cli_accepts_a_raw_patch_text_end_to_end(tool):
+    payload = json.dumps({"tool_name": tool, "tool_input": RAW_PATCH})
+    result = subprocess.run([sys.executable, str(SCRIPT)], input=payload,
+                            capture_output=True, text=True, check=False,
+                            env={**os.environ, "RF_AGENT_POLICY": "confirm", "RF_AGENT_READ_ONLY": "0"})
+    assert result.returncode == 0
+    assert json.loads(result.stdout)["hookSpecificOutput"]["permissionDecision"] == "ask"
 
 
 @pytest.mark.parametrize("tool, arguments", [
