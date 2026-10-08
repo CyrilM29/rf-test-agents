@@ -133,6 +133,13 @@ For a non-idempotent business write or an authorized repair-file mutation,
 the executing owner records `planned`, then `sent` BEFORE dispatch with
 `python scripts/agent_journal.py record <mission> <action> --phase <phase>`.
 After observing the result, record `confirmed --evidence <evidence-id>`.
+`sent` is the only milestone that stops a replay: without it, `recover`
+answers as if nothing was dispatched and a resuming agent could send the write
+again. Record it in the same step as the dispatch, never afterwards. If it was
+omitted anyway (the journal refuses `confirmed` without `sent`), reconcile
+read-only on the target first, then record the late `sent` and name the
+deviation in the handover trail, and close with `confirmed` or
+`reconciled_absent` and its evidence; never re-send to make the journal whole.
 Identifiers reference separately retained evidence, not raw arguments/results.
 `agent_journal.py recover <mission> <action>` reads the milestones. A `sent`
 without confirmation requires read-only reconciliation on the target, never
@@ -166,6 +173,11 @@ committed: `results/agent_runs/<mission>/handover/NNNN.json`.
 - Kinds: `mission` first and only first (adds `target`, `mode`, `invariant`,
   optional `handoff` sidecar path), then `step`, `finding`, `decision`,
   `question`, `next`, `blocked`, and a terminal `closed`.
+- The `handoff` of the `mission` entry is this mission's own sidecar: `resume`
+  refuses (exit 2) a trail whose sidecar names another `mission_id`. A mission
+  that consumes the sidecar of another one (a generator after its planner)
+  cites it in the entry text or `refs`, or receives its own sidecar (its
+  mission id, mode and scope).
 - Write as you go, never only at the end: each finding, decision or completed
   step, at the latest every ten tool calls, and a `next` entry BEFORE a long
   or risky call (suite run, business write, server restart). What is not
